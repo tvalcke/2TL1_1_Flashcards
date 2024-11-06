@@ -1,1 +1,23 @@
-title test,question test,rep test,anglais
+question 1,desktop,bureau,anglais
+question 2,computer,ordinateur,anglais
+question 3,mouse,souris,anglais
+question 4,printer,imprimante,anglais
+question 5,folder,dossier,anglais
+question 6,keyboard,clavier,anglais
+question 7,screen,écran,anglais
+question 8,file,fichier,anglais
+question 9,document,document,anglais
+question 10,office,bureau,anglais
+question 11,Prague,République Tchèque,géographie
+question 12,Copenhague,Danemark,géographie
+question 13,Helsinki,Finlande,géographie
+question 14,Oslo,Norvège,géographie
+question 15,Stockholm,Suède,géographie
+question 16,Dublin,Irlande,géographie
+question 17,Lisbonne,Portugal,géographie
+question 18,Sofia,Bulgarie,géographie
+question 19,Zagreb,Croatie,géographie
+question 20,Ljubljana,Slovénie,géographie
+question 21, TCP, fiable, admin
+question 22, UDP, pas fiable, admin
+Question piège,pipi,caca,testMaturité
