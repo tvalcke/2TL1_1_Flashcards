@@ -1,4 +1,6 @@
 from tkinter import *
+from tkinter import ttk #je l'importe en plus car il n'est pas compris dans *
+
 from datetime import date, time, datetime, timedelta
 from typing import List, Dict
 import csv
@@ -149,9 +151,13 @@ def toggle_mode():
         toggle_button.config(bg='lightgray', fg='black', text='Mode Sombre')
 
 def start_revision():
-    current_set = random.choice(list(app.sets.values()))
-    current_card = random.choice(current_set.cards)
-    show_card(current_card)
+    selected_set_name = set_choice.get()  # on récupère ce qu'on a choisit dans le drop down menu
+    current_set = app.sets.get(selected_set_name)
+    if current_set and current_set.cards:
+        current_card = random.choice(current_set.cards)
+        show_card(current_card)
+    else:
+        question_label.config(text="Aucune carte disponible dans ce set.")
 
 def show_card(card):
     question_label.config(text=card.question)
@@ -167,6 +173,12 @@ def evaluate(card, correct):
     app.stats.calculate_progress(correct)
     stats_label.config(text=app.stats.display())
     start_revision()
+
+def update_set_menu():  #sert quand on ajoute un set inexistant, pour refresh le drop down menu
+    set_menu['values'] = list(app.sets.keys())
+    if not set_menu.get(): 
+        set_menu.set('Choisir un set') 
+
 
 # Créer une instance de l'application
 app = Application(app_name='FlashCards', version='1.0')
@@ -184,6 +196,18 @@ window.config(background='white')  # Changer la couleur de fond
 # créer une 'frame', un cadre pour contenir les éléments
 frame = Frame(window, bg='white')
 frame.pack(expand=True)
+
+# ici je crée un drop down menu pour choisir le set à étudier
+set_choice = StringVar(window)
+set_choice.set("Choisir un set")  # Valeur par défaut
+
+# Initialisation de la liste des sets pour le menu déroulant
+set_menu = ttk.Combobox(window, textvariable=set_choice, values=list(app.sets.keys()))
+set_menu.place(relx=0.5, rely=0.1, anchor='n')  # Positionnement du menu déroulant
+set_menu.config(width=20)
+
+start_button = Button(frame, text="Commencer la révision", command=start_revision, bg='blue', fg='white')
+start_button.pack(pady=20)
 
 # Ajouter un bouton pour changer de mode
 toggle_button = Button(window, text='Mode Sombre', command=toggle_mode, bg='lightgray', fg='black')
@@ -210,10 +234,6 @@ incorrect_button.pack(side=RIGHT, padx=5, pady=5)
 # Statistiques minimales
 stats_label = Label(frame, text=app.stats.display(), font=('Courier New', 12), bg="white", fg="black")
 stats_label.pack()
-
-# Bouton pour commencer la révision
-start_button = Button(frame, text="Commencer la révision", command=start_revision, bg='blue', fg='white')
-start_button.pack(pady=20)
 
 # Ajouter un formulaire pour créer une nouvelle flashcard
 add_card_frame = Frame(frame, bg="white")
@@ -243,10 +263,12 @@ def add_flashcard():
 
     if title and question and answer and set_name:  # vérifie que tous les champs sont remplis
         app.create_flashcard(title, question, answer, set_name)
+        update_set_menu()  # réactualise le drop down
         title_entry.delete(0, END)
         question_entry.delete(0, END)
         answer_entry.delete(0, END)
         set_entry.delete(0, END)
+
 
 add_button = Button(add_card_frame, text="Ajouter une flashcard", command=add_flashcard, bg='orange')
 add_button.grid(row=4, column=0, columnspan=2, pady=10)
