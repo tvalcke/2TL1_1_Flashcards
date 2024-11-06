@@ -55,7 +55,8 @@ class Statistics:
             accuracy = (self.correct_answers / self.cards_reviewed) * 100
         else:
             accuracy = 0
-        return ("Nombre de cartes vues: ", self.cards_reviewed, ", précision: ", round(accuracy, 2), " %. ")
+        return "Nombre de cartes vues: " + str(self.cards_reviewed) + ", précision: " + str(round(accuracy, 2)) + " %."
+
 
 class Badge:
     def __init__(self, name: str, description: str, attainment_conditions: str):
@@ -137,18 +138,59 @@ class Application:
 
 # Fonction pour basculer entre le mode sombre et clair
 def toggle_mode():
-    if window.config('bg')[-1] == 'white':  # Vérifie la couleur de fond actuelle
+    if window.cget('bg') == 'white':  # Vérifie la couleur de fond actuelle
+        # Mode sombre
         window.config(background='black')
+        titleFrame.config(background='black')
         frame.config(background='black')
         label_title.config(bg='black', fg='white')
-        label_subtitle.config(bg='black', fg='white')
+        set_menu.config(background='gray', foreground='white')
+        canvas.config(bg='black')
+        start_button.config(bg='darkgray', fg='white')
         toggle_button.config(bg='gray', fg='white', text='Mode Clair')
+        question_label.config(bg='black', fg='white')
+        button_frame.config(bg='black')
+        answer_button.config(bg='darkgray', fg='white')
+        correct_button.config(bg='darkgreen', fg='white')
+        incorrect_button.config(bg='darkred', fg='white')
+        stats_label.config(bg='black', fg='white')
+        add_card_frame.config(bg='black')
+        question_entry.config(bg='gray', fg='white')
+        answer_entry.config(bg='gray', fg='white')
+        title_entry.config(bg='gray', fg='white')
+        set_entry.config(bg='gray', fg='white')
+        add_button.config(bg='darkorange', fg='white')
+
+        if not set_menu.get():  #refresh le ddm pour afficher qlq chose si aucun set n'ets choisit 
+            set_menu.set('Choisir un set')
+        
     else:
+        # Mode clair
         window.config(background='white')
+        titleFrame.config(background='white')
         frame.config(background='white')
         label_title.config(bg='white', fg='black')
-        label_subtitle.config(bg='white', fg='black')
+        set_menu.config(background='white', foreground='black')
+        canvas.config(bg='white')
+        start_button.config(bg='blue', fg='white')
         toggle_button.config(bg='lightgray', fg='black', text='Mode Sombre')
+        question_label.config(bg='white', fg='black')
+        button_frame.config(bg='white')
+        answer_button.config(bg='lightgray', fg='black')
+        correct_button.config(bg='green', fg='black')
+        incorrect_button.config(bg='red', fg='black')
+        stats_label.config(bg='white', fg='black')
+        add_card_frame.config(bg='white')
+        question_entry.config(bg='white', fg='black')
+        answer_entry.config(bg='white', fg='black')
+        title_entry.config(bg='white', fg='black')
+        set_entry.config(bg='white', fg='black')
+        add_button.config(bg='orange', fg='black')
+
+        if not set_menu.get():
+            set_menu.set('Choisir un set')
+
+
 
 def start_revision():
     selected_set_name = set_choice.get()  # on récupère ce qu'on a choisit dans le drop down menu
@@ -160,13 +202,17 @@ def start_revision():
         question_label.config(text="Aucune carte disponible dans ce set.")
 
 def show_card(card):
-    question_label.config(text=card.question)
+    canvas.delete("all")
+    draw_card(canvas, card, 50, 50, 300, 200)  # Dessiner la carte
     answer_button.config(command=lambda: show_answer(card))
 
+
 def show_answer(card):
-    question_label.config(text=f"Réponse: {card.answer}")
+    canvas.delete("all") 
+    draw_card(canvas, card, 50, 50, 300, 200, answer=True)
     correct_button.config(command=lambda: evaluate(card, True))
     incorrect_button.config(command=lambda: evaluate(card, False))
+
 
 def evaluate(card, correct):
     card.review(correct)  # Applique l’algorithme SRS basique
@@ -179,6 +225,15 @@ def update_set_menu():  #sert quand on ajoute un set inexistant, pour refresh le
     if not set_menu.get(): 
         set_menu.set('Choisir un set') 
 
+def draw_card(canvas, card, x, y, width, height, answer=False):
+    canvas.create_rectangle(x, y, x + width, y + height, fill='lightblue', outline='black')
+    if answer:
+        text = f"Réponse: {card.answer}"
+    else:
+        text = card.question
+
+    canvas.create_text(x + width / 2, y + height / 2, text=text, font=('Courier New', 16), fill='black')
+
 
 # Créer une instance de l'application
 app = Application(app_name='FlashCards', version='1.0')
@@ -186,25 +241,42 @@ app = Application(app_name='FlashCards', version='1.0')
 # Créer fenêtre
 window = Tk()
 
+# Créer un style pour le menu déroulant
+style = ttk.Style()
+style.configure("TCombobox", fieldbackground="white", foreground="black")
+
+
 # Modifier fenêtre
 window.title('FlashCards')
 window.geometry('1920x1080')
-window.minsize(480, 360)
+window.minsize(600, 900)
 # window.iconbitmap('../images/logobidon.ico')  # jsp pourquoi ça va pas .....
 window.config(background='white')  # Changer la couleur de fond
+
+# créer une 'frame', un cadre pour contenir les éléments
+titleFrame = Frame(window, bg='white')
+titleFrame.pack(expand=True)
+
+# Ajouter du texte
+label_title = Label(titleFrame,text='Bienvenue Mr Jean-Révise', font=('Courier New', 30), bg="white", fg='black')
+label_title.pack()
 
 # créer une 'frame', un cadre pour contenir les éléments
 frame = Frame(window, bg='white')
 frame.pack(expand=True)
 
 # ici je crée un drop down menu pour choisir le set à étudier
-set_choice = StringVar(window)
+set_choice = StringVar(frame)
 set_choice.set("Choisir un set")  # Valeur par défaut
 
 # Initialisation de la liste des sets pour le menu déroulant
-set_menu = ttk.Combobox(window, textvariable=set_choice, values=list(app.sets.keys()))
-set_menu.place(relx=0.5, rely=0.1, anchor='n')  # Positionnement du menu déroulant
+set_menu = ttk.Combobox(frame, textvariable=set_choice, values=list(app.sets.keys()))
+set_menu.pack(pady=10)
 set_menu.config(width=20)
+
+# Canvas qui dessine les cards
+canvas = Canvas(frame, width=400, height=300, bg='white')
+canvas.pack(pady=20)
 
 start_button = Button(frame, text="Commencer la révision", command=start_revision, bg='blue', fg='white')
 start_button.pack(pady=20)
@@ -213,23 +285,23 @@ start_button.pack(pady=20)
 toggle_button = Button(window, text='Mode Sombre', command=toggle_mode, bg='lightgray', fg='black')
 toggle_button.place(relx=1.0, rely=0.0, anchor='ne')  # Positionner le bouton en haut à droite
 
-# Ajouter du texte
-label_title = Label(frame, text='Bienvenue Mr Jean-Révise', font=('Courier New', 30), bg="white", fg='black')
-label_title.pack()
-
-# Ajouter du texte
-label_subtitle = Label(frame, text='test', font=('Courier New', 20), bg="white", fg='black')
-label_subtitle.pack()
-
 # Interface utilisateur pour la révision
 question_label = Label(frame, text="", font=('Courier New', 20), bg="white", fg="black")
 question_label.pack()
-answer_button = Button(frame, text="Montrer la réponse", command=None, bg='lightgray')
-answer_button.pack()
-correct_button = Button(frame, text="Correct", command=None, bg='green')
-correct_button.pack(side=LEFT, padx=5, pady=5)
-incorrect_button = Button(frame, text="Incorrect", command=None, bg='red')
-incorrect_button.pack(side=RIGHT, padx=5, pady=5)
+
+# Créer un cadre pour les boutons
+button_frame = Frame(frame, bg="white")
+button_frame.pack(pady=20)
+
+answer_button = Button(button_frame, text="Montrer la réponse", command=None, bg='lightgray')
+answer_button.grid(row=0, column=1, padx=5, pady=5)
+
+correct_button = Button(button_frame, text="Correct", command=None, bg='green')
+correct_button.grid(row=0, column=0, padx=5, pady=5)
+
+incorrect_button = Button(button_frame, text="Incorrect", command=None, bg='red')
+incorrect_button.grid(row=0, column=2, padx=5, pady=5)
+
 
 # Statistiques minimales
 stats_label = Label(frame, text=app.stats.display(), font=('Courier New', 12), bg="white", fg="black")
