@@ -80,7 +80,7 @@ class Application:
     def __init__(self, app_name: str, version: str):
         self.app_name = app_name
         self.version = version
-        self.sets = self.import_flashcards_from_csv("C:/Users/valck/Desktop/Ephec/BAC2/dev2/2TL1_1_Flashcards/listes.csv")
+        self.sets = self.import_flashcards_from_csv("listes.csv")
         self.stats = Statistics()
 
     def import_flashcards_from_csv(self, file_path: str):
@@ -250,7 +250,7 @@ style.configure("TCombobox", fieldbackground="white", foreground="black")
 window.title('FlashCards')
 window.geometry('1920x1080')
 window.minsize(600, 900)
-# window.iconbitmap('../images/logobidon.ico')  # jsp pourquoi ça va pas .....
+window.iconbitmap('images/logobidon.ico')  # jsp pourquoi ça va pas .....
 window.config(background='white')  # Changer la couleur de fond
 
 # créer une 'frame', un cadre pour contenir les éléments
@@ -279,7 +279,7 @@ canvas = Canvas(frame, width=400, height=300, bg='white')
 canvas.pack(pady=20)
 
 start_button = Button(frame, text="Commencer la révision", command=start_revision, bg='blue', fg='white')
-start_button.pack(pady=20)
+start_button.pack(pady=5)
 
 # Ajouter un bouton pour changer de mode
 toggle_button = Button(window, text='Mode Sombre', command=toggle_mode, bg='lightgray', fg='black')
@@ -294,7 +294,7 @@ button_frame = Frame(frame, bg="white")
 button_frame.pack(pady=20)
 
 answer_button = Button(button_frame, text="Montrer la réponse", command=None, bg='lightgray')
-answer_button.grid(row=0, column=1, padx=5, pady=5)
+answer_button.grid(row=0, column=1, padx=5, pady=1)
 
 correct_button = Button(button_frame, text="Correct", command=None, bg='green')
 correct_button.grid(row=0, column=0, padx=5, pady=5)
