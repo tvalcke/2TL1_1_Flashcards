@@ -57,7 +57,6 @@ class Statistics:
             accuracy = 0
         return "Nombre de cartes vues: " + str(self.cards_reviewed) + ", précision: " + str(round(accuracy, 2)) + " %."
 
-
 class Badge:
     def __init__(self, name: str, description: str, attainment_conditions: str):
         self.name = name
@@ -114,14 +113,14 @@ class Application:
     def create_flashcard(self, title: str, question: str, answer: str, set_name: str):
         if set_name not in self.sets:  # Vérifie si le set existe sinon on le crée
             self.sets[set_name] = Set(set_name)
-        
+
         new_card = Flashcard(title, question, answer)   # créer la carte
         self.sets[set_name].add_flashcard(new_card)
         print("Flashcard '" + title + "' ajoutée dans le set '" + set_name + "'.")
-        
+
         # Ajoute la flashcard au fichier CSV
         try:
-            with open("C:/Users/valck/Desktop/Ephec/BAC2/dev2/2TL1_1_Flashcards/listes.csv", mode='a', encoding='utf-8', newline='') as file:
+            with open("listes.csv", mode='a', encoding='utf-8', newline='') as file:
                 writer = csv.writer(file)
                 writer.writerow([title, question, answer, set_name])
         except Exception as e:
@@ -136,104 +135,191 @@ class Application:
     def unlock_badge(self, badge: Badge):
         pass
 
-# Fonction pour basculer entre le mode sombre et clair
-def toggle_mode():
-    if window.cget('bg') == 'white':  # Vérifie la couleur de fond actuelle
-        # Mode sombre
-        window.config(background='black')
-        titleFrame.config(background='black')
-        frame.config(background='black')
-        label_title.config(bg='black', fg='white')
-        set_menu.config(background='gray', foreground='white')
-        canvas.config(bg='black')
-        start_button.config(bg='darkgray', fg='white')
-        toggle_button.config(bg='gray', fg='white', text='Mode Clair')
-        question_label.config(bg='black', fg='white')
-        button_frame.config(bg='black')
-        answer_button.config(bg='darkgray', fg='white')
-        correct_button.config(bg='darkgreen', fg='white')
-        incorrect_button.config(bg='darkred', fg='white')
-        stats_label.config(bg='black', fg='white')
-        add_card_frame.config(bg='black')
-        question_entry.config(bg='gray', fg='white')
-        answer_entry.config(bg='gray', fg='white')
-        title_entry.config(bg='gray', fg='white')
-        set_entry.config(bg='gray', fg='white')
-        add_button.config(bg='darkorange', fg='white')
+class UI:
+    def __init__(self, window, app):
+        self.window = window
+        self.app = app
+        self.setup_ui()
 
-        if not set_menu.get():  #refresh le ddm pour afficher qlq chose si aucun set n'ets choisit 
-            set_menu.set('Choisir un set')
-        
-    else:
-        # Mode clair
-        window.config(background='white')
-        titleFrame.config(background='white')
-        frame.config(background='white')
-        label_title.config(bg='white', fg='black')
-        set_menu.config(background='white', foreground='black')
-        canvas.config(bg='white')
-        start_button.config(bg='blue', fg='white')
-        toggle_button.config(bg='lightgray', fg='black', text='Mode Sombre')
-        question_label.config(bg='white', fg='black')
-        button_frame.config(bg='white')
-        answer_button.config(bg='lightgray', fg='black')
-        correct_button.config(bg='green', fg='black')
-        incorrect_button.config(bg='red', fg='black')
-        stats_label.config(bg='white', fg='black')
-        add_card_frame.config(bg='white')
-        question_entry.config(bg='white', fg='black')
-        answer_entry.config(bg='white', fg='black')
-        title_entry.config(bg='white', fg='black')
-        set_entry.config(bg='white', fg='black')
-        add_button.config(bg='orange', fg='black')
+    def setup_ui(self):
+        # Initialisation de l'interface utilisateur
+        self.window.title('FlashCards')
+        self.window.geometry('1920x1080')
+        self.window.minsize(600, 900)
+        self.window.iconbitmap('images/logobidon.ico')
+        self.window.config(background='white')
 
-        if not set_menu.get():
-            set_menu.set('Choisir un set')
+        self.titleFrame = Frame(self.window, bg='white')
+        self.titleFrame.pack(expand=True)
 
+        self.label_title = Label(self.titleFrame, text='Bienvenue Mr Jean-Révise', font=('Courier New', 30), bg="white", fg='black')
+        self.label_title.pack()
 
+        self.frame = Frame(self.window, bg='white')
+        self.frame.pack(expand=True)
 
-def start_revision():
-    selected_set_name = set_choice.get()  # on récupère ce qu'on a choisit dans le drop down menu
-    current_set = app.sets.get(selected_set_name)
-    if current_set and current_set.cards:
-        current_card = random.choice(current_set.cards)
-        show_card(current_card)
-    else:
-        question_label.config(text="Aucune carte disponible dans ce set.")
+        self.set_choice = StringVar(self.frame)
+        self.set_choice.set("Choisir un set")
 
-def show_card(card):
-    canvas.delete("all")
-    draw_card(canvas, card, 50, 50, 300, 200)  # Dessiner la carte
-    answer_button.config(command=lambda: show_answer(card))
+        self.set_menu = ttk.Combobox(self.frame, textvariable=self.set_choice, values=list(self.app.sets.keys()))
+        self.set_menu.pack(pady=10)
+        self.set_menu.config(width=20)
 
+        self.canvas = Canvas(self.frame, width=400, height=300, bg='white')
+        self.canvas.pack(pady=20)
 
-def show_answer(card):
-    canvas.delete("all") 
-    draw_card(canvas, card, 50, 50, 300, 200, answer=True)
-    correct_button.config(command=lambda: evaluate(card, True))
-    incorrect_button.config(command=lambda: evaluate(card, False))
+        self.start_button = Button(self.frame, text="Commencer la révision", command=self.start_revision, bg='blue', fg='white')
+        self.start_button.pack(pady=5)
 
+        self.toggle_button = Button(self.window, text='Mode Sombre', command=self.toggle_mode, bg='lightgray', fg='black')
+        self.toggle_button.place(relx=1.0, rely=0.0, anchor='ne')
 
-def evaluate(card, correct):
-    card.review(correct)  # Applique l’algorithme SRS basique
-    app.stats.calculate_progress(correct)
-    stats_label.config(text=app.stats.display())
-    start_revision()
+        self.question_label = Label(self.frame, text="", font=('Courier New', 20), bg="white", fg="black")
+        self.question_label.pack()
 
-def update_set_menu():  #sert quand on ajoute un set inexistant, pour refresh le drop down menu
-    set_menu['values'] = list(app.sets.keys())
-    if not set_menu.get(): 
-        set_menu.set('Choisir un set') 
+        self.button_frame = Frame(self.frame, bg="white")
+        self.button_frame.pack(pady=20)
 
-def draw_card(canvas, card, x, y, width, height, answer=False):
-    canvas.create_rectangle(x, y, x + width, y + height, fill='lightblue', outline='black')
-    if answer:
-        text = f"Réponse: {card.answer}"
-    else:
-        text = card.question
+        self.answer_button = Button(self.button_frame, text="Montrer la réponse", command=None, bg='lightgray')
+        self.answer_button.grid(row=0, column=1, padx=5, pady=1)
 
-    canvas.create_text(x + width / 2, y + height / 2, text=text, font=('Courier New', 16), fill='black')
+        self.correct_button = Button(self.button_frame, text="Correct", command=None, bg='green')
+        self.correct_button.grid(row=0, column=0, padx=5, pady=5)
 
+        self.incorrect_button = Button(self.button_frame, text="Incorrect", command=None, bg='red')
+        self.incorrect_button.grid(row=0, column=2, padx=5, pady=5)
+
+        self.stats_label = Label(self.frame, text=self.app.stats.display(), font=('Courier New', 12), bg="white", fg="black")
+        self.stats_label.pack()
+
+        self.add_card_frame = Frame(self.frame, bg="white")
+        self.add_card_frame.pack(pady=10)
+
+        Label(self.add_card_frame, text="Question:", font=('Courier New', 12), bg="white").grid(row=0, column=0, padx=5, pady=5)
+        self.question_entry = Entry(self.add_card_frame, font=('Courier New', 12), width=30)
+        self.question_entry.grid(row=0, column=1, padx=5, pady=5)
+
+        Label(self.add_card_frame, text="Réponse:", font=('Courier New', 12), bg="white").grid(row=1, column=0, padx=5, pady=5)
+        self.answer_entry = Entry(self.add_card_frame, font=('Courier New', 12), width=30)
+        self.answer_entry.grid(row=1, column=1, padx=5, pady=5)
+
+        Label(self.add_card_frame, text="Titre:", font=('Courier New', 12), bg="white").grid(row=2, column=0, padx=5, pady=5)
+        self.title_entry = Entry(self.add_card_frame, font=('Courier New', 12), width=30)
+        self.title_entry.grid(row=2, column=1, padx=5, pady=5)
+
+        Label(self.add_card_frame, text="Set:", font=('Courier New', 12), bg="white").grid(row=3, column=0, padx=5, pady=5)
+        self.set_entry = Entry(self.add_card_frame, font=('Courier New', 12), width=30)
+        self.set_entry.grid(row=3, column=1, padx=5, pady=5)
+
+        self.add_button = Button(self.add_card_frame, text="Ajouter une flashcard", command=self.add_flashcard, bg='orange')
+        self.add_button.grid(row=4, column=0, columnspan=2, pady=10)
+
+    def toggle_mode(self):
+        if self.window.cget('bg') == 'white':
+            # Mode sombre
+            self.window.config(background='black')
+            self.titleFrame.config(background='black')
+            self.frame.config(background='black')
+            self.label_title.config(bg='black', fg='white')
+            self.set_menu.config(background='gray', foreground='white')
+            self.canvas.config(bg='black')
+            self.start_button.config(bg='darkgray', fg='white')
+            self.toggle_button.config(bg='gray', fg='white', text='Mode Clair')
+            self.question_label.config(bg='black', fg='white')
+            self.button_frame.config(bg='black')
+            self.answer_button.config(bg='darkgray', fg='white')
+            self.correct_button.config(bg='darkgreen', fg='white')
+            self.incorrect_button.config(bg='darkred', fg='white')
+            self.stats_label.config(bg='black', fg='white')
+            self.add_card_frame.config(bg='black')
+            self.question_entry.config(bg='gray', fg='white')
+            self.answer_entry.config(bg='gray', fg='white')
+            self.title_entry.config(bg='gray', fg='white')
+            self.set_entry.config(bg='gray', fg='white')
+            self.add_button.config(bg='darkorange', fg='white')
+
+            if not self.set_menu.get():
+                self.set_menu.set('Choisir un set')
+
+        else:
+            # Mode clair
+            self.window.config(background='white')
+            self.titleFrame.config(background='white')
+            self.frame.config(background='white')
+            self.label_title.config(bg='white', fg='black')
+            self.set_menu.config(background='white', foreground='black')
+            self.canvas.config(bg='white')
+            self.start_button.config(bg='blue', fg='white')
+            self.toggle_button.config(bg='lightgray', fg='black', text='Mode Sombre')
+            self.question_label.config(bg='white', fg='black')
+            self.button_frame.config(bg='white')
+            self.answer_button.config(bg='lightgray', fg='black')
+            self.correct_button.config(bg='green', fg='black')
+            self.incorrect_button.config(bg='red', fg='black')
+            self.stats_label.config(bg='white', fg='black')
+            self.add_card_frame.config(bg='white')
+            self.question_entry.config(bg='white', fg='black')
+            self.answer_entry.config(bg='white', fg='black')
+            self.title_entry.config(bg='white', fg='black')
+            self.set_entry.config(bg='white', fg='black')
+            self.add_button.config(bg='orange', fg='black')
+
+            if not self.set_menu.get():
+                self.set_menu.set('Choisir un set')
+
+    def start_revision(self):
+        selected_set_name = self.set_choice.get()
+        current_set = self.app.sets.get(selected_set_name)
+        if current_set and current_set.cards:
+            current_card = random.choice(current_set.cards)
+            self.show_card(current_card)
+        else:
+            self.question_label.config(text="Aucune carte disponible dans ce set.")
+
+    def show_card(self, card):
+        self.canvas.delete("all")
+        self.draw_card(self.canvas, card, 50, 50, 300, 200)
+        self.answer_button.config(command=lambda: self.show_answer(card))
+
+    def show_answer(self, card):
+        self.canvas.delete("all")
+        self.draw_card(self.canvas, card, 50, 50, 300, 200, answer=True)
+        self.correct_button.config(command=lambda: self.evaluate(card, True))
+        self.incorrect_button.config(command=lambda: self.evaluate(card, False))
+
+    def evaluate(self, card, correct):
+        card.review(correct)
+        self.app.stats.calculate_progress(correct)
+        self.stats_label.config(text=self.app.stats.display())
+        self.start_revision()
+
+    def update_set_menu(self):
+        self.set_menu['values'] = list(self.app.sets.keys())
+        if not self.set_menu.get():
+            self.set_menu.set('Choisir un set')
+
+    def draw_card(self, canvas, card, x, y, width, height, answer=False):
+        canvas.create_rectangle(x, y, x + width, y + height, fill='lightblue', outline='black')
+        if answer:
+            text = f"Réponse: {card.answer}"
+        else:
+            text = card.question
+
+        canvas.create_text(x + width / 2, y + height / 2, text=text, font=('Courier New', 16), fill='black')
+
+    def add_flashcard(self):
+        title = self.title_entry.get()
+        question = self.question_entry.get()
+        answer = self.answer_entry.get()
+        set_name = self.set_entry.get()
+
+        if title and question and answer and set_name:
+            self.app.create_flashcard(title, question, answer, set_name)
+            self.update_set_menu()
+            self.title_entry.delete(0, END)
+            self.question_entry.delete(0, END)
+            self.answer_entry.delete(0, END)
+            self.set_entry.delete(0, END)
 
 # Créer une instance de l'application
 app = Application(app_name='FlashCards', version='1.0')
@@ -241,109 +327,8 @@ app = Application(app_name='FlashCards', version='1.0')
 # Créer fenêtre
 window = Tk()
 
-# Créer un style pour le menu déroulant
-style = ttk.Style()
-style.configure("TCombobox", fieldbackground="white", foreground="black")
-
-
-# Modifier fenêtre
-window.title('FlashCards')
-window.geometry('1920x1080')
-window.minsize(600, 900)
-window.iconbitmap('images/logobidon.ico')  # jsp pourquoi ça va pas .....
-window.config(background='white')  # Changer la couleur de fond
-
-# créer une 'frame', un cadre pour contenir les éléments
-titleFrame = Frame(window, bg='white')
-titleFrame.pack(expand=True)
-
-# Ajouter du texte
-label_title = Label(titleFrame,text='Bienvenue Mr Jean-Révise', font=('Courier New', 30), bg="white", fg='black')
-label_title.pack()
-
-# créer une 'frame', un cadre pour contenir les éléments
-frame = Frame(window, bg='white')
-frame.pack(expand=True)
-
-# ici je crée un drop down menu pour choisir le set à étudier
-set_choice = StringVar(frame)
-set_choice.set("Choisir un set")  # Valeur par défaut
-
-# Initialisation de la liste des sets pour le menu déroulant
-set_menu = ttk.Combobox(frame, textvariable=set_choice, values=list(app.sets.keys()))
-set_menu.pack(pady=10)
-set_menu.config(width=20)
-
-# Canvas qui dessine les cards
-canvas = Canvas(frame, width=400, height=300, bg='white')
-canvas.pack(pady=20)
-
-start_button = Button(frame, text="Commencer la révision", command=start_revision, bg='blue', fg='white')
-start_button.pack(pady=5)
-
-# Ajouter un bouton pour changer de mode
-toggle_button = Button(window, text='Mode Sombre', command=toggle_mode, bg='lightgray', fg='black')
-toggle_button.place(relx=1.0, rely=0.0, anchor='ne')  # Positionner le bouton en haut à droite
-
-# Interface utilisateur pour la révision
-question_label = Label(frame, text="", font=('Courier New', 20), bg="white", fg="black")
-question_label.pack()
-
-# Créer un cadre pour les boutons
-button_frame = Frame(frame, bg="white")
-button_frame.pack(pady=20)
-
-answer_button = Button(button_frame, text="Montrer la réponse", command=None, bg='lightgray')
-answer_button.grid(row=0, column=1, padx=5, pady=1)
-
-correct_button = Button(button_frame, text="Correct", command=None, bg='green')
-correct_button.grid(row=0, column=0, padx=5, pady=5)
-
-incorrect_button = Button(button_frame, text="Incorrect", command=None, bg='red')
-incorrect_button.grid(row=0, column=2, padx=5, pady=5)
-
-
-# Statistiques minimales
-stats_label = Label(frame, text=app.stats.display(), font=('Courier New', 12), bg="white", fg="black")
-stats_label.pack()
-
-# Ajouter un formulaire pour créer une nouvelle flashcard
-add_card_frame = Frame(frame, bg="white")
-add_card_frame.pack(pady=10)
-
-Label(add_card_frame, text="Question:", font=('Courier New', 12), bg="white").grid(row=0, column=0, padx=5, pady=5)
-question_entry = Entry(add_card_frame, font=('Courier New', 12), width=30)
-question_entry.grid(row=0, column=1, padx=5, pady=5)
-
-Label(add_card_frame, text="Réponse:", font=('Courier New', 12), bg="white").grid(row=1, column=0, padx=5, pady=5)
-answer_entry = Entry(add_card_frame, font=('Courier New', 12), width=30)
-answer_entry.grid(row=1, column=1, padx=5, pady=5)
-
-Label(add_card_frame, text="Titre:", font=('Courier New', 12), bg="white").grid(row=2, column=0, padx=5, pady=5)
-title_entry = Entry(add_card_frame, font=('Courier New', 12), width=30)
-title_entry.grid(row=2, column=1, padx=5, pady=5)
-
-Label(add_card_frame, text="Set:", font=('Courier New', 12), bg="white").grid(row=3, column=0, padx=5, pady=5)
-set_entry = Entry(add_card_frame, font=('Courier New', 12), width=30)
-set_entry.grid(row=3, column=1, padx=5, pady=5)
-
-def add_flashcard():
-    title = title_entry.get()
-    question = question_entry.get()
-    answer = answer_entry.get()
-    set_name = set_entry.get()
-
-    if title and question and answer and set_name:  # vérifie que tous les champs sont remplis
-        app.create_flashcard(title, question, answer, set_name)
-        update_set_menu()  # réactualise le drop down
-        title_entry.delete(0, END)
-        question_entry.delete(0, END)
-        answer_entry.delete(0, END)
-        set_entry.delete(0, END)
-
-
-add_button = Button(add_card_frame, text="Ajouter une flashcard", command=add_flashcard, bg='orange')
-add_button.grid(row=4, column=0, columnspan=2, pady=10)
+# Créer une instance de l'interface utilisateur
+ui = UI(window, app)
 
 # Lancer la fenêtre
 window.mainloop()
