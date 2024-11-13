@@ -65,16 +65,6 @@ class Flashcard:
 
 class Set:  # ajout de la classe set pour regrouper les cards, à ajouter dans l'uml
     def __init__(self, name: str):
-        """    #Thomas
-        @description:
-            Initialise un ensemble de cartes (set) avec un nom donné et une liste vide de flashcards.
-    
-        @pre:
-            * `name` est une chaîne de caractères non vide.
-    
-        @post:
-            * Un objet `Set` est créé avec `name` pour son nom et une liste vide `cards`.
-        """
         self.name = name
         self.cards = []
 
@@ -232,6 +222,17 @@ class Application:
         return sets  # si on n'a pas pu lire ça, renvoie les sets vides
 
     def create_flashcard(self, title: str, question: str, answer: str, set_name: str):
+        """    #Thomas
+        @description:
+            Crée une nouvelle flashcard et l'ajoute au set désigné, en l'enregistrant dans un fichier CSV.
+    
+        @pre:
+            * `title`, `question`, `answer`, et `set_name` sont des chaînes non vides.
+    
+        @post:
+            * La flashcard est ajoutée au set et enregistrée dans `listes.csv`.
+            * Affiche un message d'erreur si l'écriture dans le fichier CSV échoue.
+        """
         if set_name not in self.sets:  # Vérifie si le set existe sinon on le crée
             self.sets[set_name] = Set(set_name)
 
