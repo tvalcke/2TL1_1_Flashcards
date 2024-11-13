@@ -1,3 +1,11 @@
+"""
+Code rédigé par Préat Thomas - Hertmans Mathéo - Valcke Tristan - Colson Nathan
+Dans le cadre du cours de DEV2 en 2ème année de bachelier de TI à l'EPHEC
+
+Chat GPT a été utilisé pour trouver un modèle de commentaires pour les méthodes
+"""
+
+
 from tkinter import *
 from tkinter import ttk #je l'importe en plus car il n'est pas compris dans *
 
@@ -57,6 +65,16 @@ class Flashcard:
 
 class Set:  # ajout de la classe set pour regrouper les cards, à ajouter dans l'uml
     def __init__(self, name: str):
+        """    #Thomas
+        @description:
+            Initialise un ensemble de cartes (set) avec un nom donné et une liste vide de flashcards.
+    
+        @pre:
+            * `name` est une chaîne de caractères non vide.
+    
+        @post:
+            * Un objet `Set` est créé avec `name` pour son nom et une liste vide `cards`.
+        """
         self.name = name
         self.cards = []
 
@@ -111,6 +129,16 @@ class Statistics:
         pass
 
     def display(self):  # sert pour le mvp, pas encore besoin de generate_graphics
+        """    #Thomas
+        @description:
+            Calcule et retourne un résumé des statistiques de révision (cartes révisées et précision).
+    
+        @pre:
+            * `cards_reviewed` et `correct_answers` sont des entiers, avec `cards_reviewed >= 0`.
+    
+        @post:
+            * Retourne une chaîne décrivant le nombre de cartes vues et la précision en pourcentage.
+        """
         if self.cards_reviewed > 0:
             accuracy = (self.correct_answers / self.cards_reviewed) * 100
         else:
@@ -124,6 +152,16 @@ class Badge:
         self.attainment_conditions = attainment_conditions
 
     def assign_badge(self):
+        """    #Thomas
+        @description:
+            Vérifie si les conditions d'obtention sont remplies et assigne un badge à l'utilisateur.
+    
+        @pre:
+            * `attainment_conditions` est une chaîne qui décrit les conditions nécessaires.
+    
+        @post:
+            * Attribue un badge si les conditions sont remplies (implémentation future).
+        """
         pass
 
 class Reminder:
@@ -133,7 +171,7 @@ class Reminder:
         self.cards_to_review = cards_to_review
 
     def send_reminder(self):
-        """     
+        """     #Thomas
         @description:
             Envoie un rappel aux utilisateurs pour réviser les cartes de flash définies dans `cards_to_review`.
     
@@ -155,6 +193,17 @@ class Application:
         self.stats = Statistics()
 
     def import_flashcards_from_csv(self, file_path: str):
+        """    #Thomas
+        @description:
+            Importe des flashcards depuis un fichier CSV et les ajoute aux ensembles de l'application.
+    
+        @pre:
+            * `file_path` est le chemin d'un fichier CSV accessible.
+        
+        @post:
+            * Retourne un dictionnaire de `Set` contenant les cartes importées.
+            * Affiche des messages d'erreur si le fichier n'existe pas ou si l'encodage est incorrect.
+        """
         sets = {}
         try:
             with open(file_path, mode='r', encoding='utf-8') as file:
