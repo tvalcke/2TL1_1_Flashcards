@@ -19,6 +19,20 @@ class Flashcard:
         self.next_review_date = datetime.now()  # sera pour réévaluer la prochaine révision
 
     def review(self, correct: bool):
+        """     #Tristan
+        @description : 
+            Met à jour le niveau de révision ('review_level') de l'objet en fonction de la réponse de l'utilisateur.
+            Ajuste la date de la prochaine révision ('next_review_date') en fonction du niveau de révision atteint
+
+        @pré:
+            * 'self.review_level' ets un entier supérieur ou égal à zéro. Il représente le niveau de révision actuel d'une carte
+            * 'self.next_review_date' est de type 'datetime', il représente la date de la prochaine révision
+
+        @post:
+            * Si 'correct' est True, 'self.review_level' va être incrémenter de 1
+            * Si `correct` est False et que `self.review_level` est plus grand ou égal à 1, `self.review_level` est décrémenté de 1.
+            * `self.next_review_date` est mis à jour pour être la date actuelle plus `2 ** self.review_level` jours.
+        """
         if correct:
             self.review_level += 1
         elif self.review_level >= 1:
@@ -26,7 +40,19 @@ class Flashcard:
 
         self.next_review_date = datetime.now() + timedelta(days=2 ** self.review_level)  # ajuste la prochaine révision par rapport au niveau de connaissance
 
-    def evaluate_response(self):
+    def evaluate_response(self, user_response : str, correct_answer : str):
+        """     #Tristan
+        @description:
+            Évalue la réponse donnée par l'utilisateur pour une carte en la comparant avec la bonne réponse
+        
+        @pré:
+            * 'user_response' est un str qui représentela réponse donnée par le user
+            * 'correct_answer' est un str qui représente la réponse correcte
+
+        @post:
+            * Retourne True si 'user_response' correspond à 'correct_answer'
+            * Retourne False si 'user_response' ne correspond pas à 'correct_answer'
+        """
         pass
 
 class Set:  # ajout de la classe set pour regrouper les cards, à ajouter dans l'uml
@@ -35,6 +61,17 @@ class Set:  # ajout de la classe set pour regrouper les cards, à ajouter dans l
         self.cards = []
 
     def add_flashcard(self, flashcard: Flashcard):
+        """     #Tristan
+        @description:
+            Ajoute une nouvelle flashcard à la liste des cartes dans le set
+        
+        @pre:
+            * 'flashcard' est une instance de la classe Flashcard qui contient une question et une réponse(plus un titre et le set correspondant)
+            * 'self.cards' est une liste de flashcards déjà initialisée
+        
+        @post:
+            * 'flashcard' est ajoutée à la liste 'self.cards'.
+        """
         self.cards.append(flashcard)
 
 class Statistics:
@@ -43,11 +80,34 @@ class Statistics:
         self.correct_answers = 0
 
     def calculate_progress(self, correct: bool):
+        """     #Tristan
+        @description:
+            Met à jour les statistiques de révision
+        
+        @pre:
+            * 'correct' est un booléen qui indique si la réponse est correcte
+            * 'self.cards_reviewed' et 'self.correct_answers' sont des entiers initialisés pour suivre la progression de l'utilisateur
+        
+        @post:
+            * 'self.cards_reviewed' est incrémenté de 1
+            * 'self.correct_answers' est incrémenté de 1 si correct est True
+        """
         self.cards_reviewed += 1
         if correct:
             self.correct_answers += 1
 
     def generate_graphics(self):
+        """     #Tristan
+        @description:
+            Génère des graphiques de progression basés sur l'avancement de l'utilisateur
+        
+        @pre:
+            * Les statistiques de progression ('self.cards_reviewed' et 'self.correct_answers') doivent être à jour
+        
+        @post:
+            * Un graphique de progression est généré et affiché dans l'interface de l'application
+            * Le graphique reflète les données actuelles des réponses correctes et du nombre total de cartes révisées
+        """
         pass
 
     def display(self):  # sert pour le mvp, pas encore besoin de generate_graphics
