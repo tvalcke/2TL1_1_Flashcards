@@ -133,6 +133,18 @@ class Reminder:
         self.cards_to_review = cards_to_review
 
     def send_reminder(self):
+        """     
+        @description:
+            Envoie un rappel aux utilisateurs pour réviser les cartes de flash définies dans `cards_to_review`.
+    
+        @pre:
+            * `self.reminder_date` et `self.reminder_time` sont de types `date` et `time`, définissant la date et l'heure du rappel.
+            * `self.cards_to_review` est une liste de `Flashcard` contenant les cartes à réviser.
+    
+        @post:
+            * Un rappel est déclenché, demandant à l'utilisateur de réviser les cartes dans `self.cards_to_review`.
+            * Le rappel peut être affiché dans l'interface utilisateur ou envoyé par un autre moyen si spécifié.
+        """
         pass
 
 class Application:
