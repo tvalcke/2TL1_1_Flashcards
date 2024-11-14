@@ -249,12 +249,37 @@ class Application:
             print("Erreur lors de l'écriture dans le fichier CSV :", e)
 
     def display_statistics(self):
+        """     #Mathéo
+        @description:
+            Affiche les statistiques de chaques cartes.
+
+        @pre:
+            * récupère la carte affichée.
+        @post:
+            * renvoie les statistique propre a la carte.
+        """
         pass
 
-    def send_reminder(self, reminder_date: date, reminder_time: time, cards_to_review: List[Flashcard]):
+    def send_to_reminder(self, reminder_date: date, reminder_time: time, cards_to_review: List[Flashcard]):
+        """     #Mathéo
+        @description:
+            Envoie les données a la classe reminder.
+        @pre:
+            * 'reminder_date' est un champ date, 'reminder_time' est un champ time, 'cards_to_review' est une liste des cartes a réviser.
+        @post:
+            * Une liste des donnée reçus en paramètre.
+        """
         pass
 
     def unlock_badge(self, badge: Badge):
+        """     #Mathéo
+        @description:
+            Débloque les badges de la classe Badge.
+        @pre:
+            * Badge est une instance de la classe Badge, le badge n'est pas encore débloqué pour l'utilisateur.
+        @post:
+            * Le badge est débloqué.
+        """
         pass
 
 class UI:
@@ -264,6 +289,14 @@ class UI:
         self.setup_ui()
 
     def setup_ui(self):
+        """     #Mathéo
+        @description:
+            Instance la fenêtre de l'application et dispose les élément.
+        @pre:
+            * Aucune prédisposition.
+        @post:
+            * La fenêtre est créée.
+        """
         # Initialisation de l'interface utilisateur
         self.window.title('FlashCards')
         self.window.geometry('1920x1080')
@@ -337,6 +370,14 @@ class UI:
         self.add_button.grid(row=4, column=0, columnspan=2, pady=10)
 
     def toggle_mode(self):
+        """     #Mathéo
+        @description:
+            Switch entre les deux mode d'affichage.
+        @pre:
+            * Aucune prédisposition
+        @post:
+            * Change l'affichage entre le Dark mode et Light mode
+        """
         if self.window.cget('bg') == 'white':
             # Mode sombre
             self.window.config(background='black')
