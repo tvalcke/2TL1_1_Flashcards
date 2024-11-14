@@ -390,6 +390,19 @@ class UI:
                 self.set_menu.set('Choisir un set')
 
     def start_revision(self):
+        """ #Nathan
+        @description:
+        Démarre la révision pour un set sélectionné
+        
+        @pré:
+        * self.set_choice contient le nom du set sélectionné dans le menu déroulant
+        * self.app.sets est un dictionnaire contenant des ensembles de cartes
+        
+        @post:
+        * Si un set valide avec des cartes est sélectionné, une carte aléatoire de cet ensemble est affichée en appelant show_card
+        * Si le set est vide ou non trouvé, un message indiquant qu'aucune carte n'est disponible est affiché
+        """
+
         selected_set_name = self.set_choice.get()
         current_set = self.app.sets.get(selected_set_name)
         if current_set and current_set.cards:
@@ -399,23 +412,69 @@ class UI:
             self.question_label.config(text="Aucune carte disponible dans ce set.")
 
     def show_card(self, card):
+        """ #Nathan
+            @description:
+            Affiche la question lié à une carte sur le canevas
+
+            @pré:
+            * card est une instance de Flashcard contenant une question et une réponse
+
+            @post:
+            * Le canevas est mis à jour pour afficher la question de la carte
+            * Le bouton pour afficher la réponse est configuré pour appeler show_answer avec la carte actuelle
+        """
         self.canvas.delete("all")
         self.draw_card(self.canvas, card, 50, 50, 300, 200)
         self.answer_button.config(command=lambda: self.show_answer(card))
 
     def show_answer(self, card):
+        """ #Nathan
+        Affiche la réponse de la carte et configure les boutons d'évaluation
+
+        @pré:
+        * card est une instance de Flashcard contenant une réponse à afficher
+
+        @post:
+        * Le canevas est mis à jour pour afficher la réponse de la carte
+        * Les boutons d'évaluation ("Correct" et "Incorrect") sont configurés pour appeler la méthode evaluate avec la réponse correcte ou incorrecte
+    """
         self.canvas.delete("all")
         self.draw_card(self.canvas, card, 50, 50, 300, 200, answer=True)
         self.correct_button.config(command=lambda: self.evaluate(card, True))
         self.incorrect_button.config(command=lambda: self.evaluate(card, False))
 
     def evaluate(self, card, correct):
+        """ #Nathan
+        @description:
+        Evalue la réponse de l'utilisateur et met à jour les statistiques
+
+        @pré:
+        * card est une instance de Flashcard qui sera mise à jour en fonction de la réponse (correct ou incorrect)
+        * correct est un booléen indiquant si la réponse donnée par l'utilisateur est correcte
+
+        @post:
+        * La carte est mise à jour en utilisant la méthode review pour ajuster son niveau de révision
+        * Les statistiques de l'application sont mises à jour avec calculate_progress
+        * Le label des statistiques affiche les statistiques mises à jour
+        * La révision reprend avec start_revision
+        """
         card.review(correct)
         self.app.stats.calculate_progress(correct)
         self.stats_label.config(text=self.app.stats.display())
         self.start_revision()
 
     def update_set_menu(self):
+        """ #Nathan
+        @description:
+        Met à jour le menu déroulant des ensembles disponibles
+
+        @pré:
+        * self.app.sets contient les ensembles actuellement chargés dans l'application
+
+        @post:
+        * Le menu déroulant set_menu est mis à jour avec les noms des ensembles disponibles
+        * Si aucun ensemble n'est sélectionné, le menu est défini par défaut sur "Choisir un set"
+        """
         self.set_menu['values'] = list(self.app.sets.keys())
         if not self.set_menu.get():
             self.set_menu.set('Choisir un set')
