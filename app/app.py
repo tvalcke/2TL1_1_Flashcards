@@ -546,7 +546,7 @@ class UI:
     def add_flashcard(self):
         """     #Mathéo
         @description :
-            Ajoute un nouvelle carte en incluant la question, la réponse, le titre et le nom du set.
+            Ajoute une nouvelle carte en incluant la question, la réponse, le titre et le nom du set.
             Met à jours les sets disponibles et vides les champs de saisie après l'ajout d'une carte.
 
         @pré:
