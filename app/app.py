@@ -523,17 +523,17 @@ class UI:
     def draw_card(self, canvas, card, x, y, width, height, answer=False):
         """     #Mathéo
         @description :
-            Affiche une carte de révision sur le canevas à l'emplacement spécifié. Si 'answer' 
-            est True il affiche la réponse de la carte, sinon il affiche la question.
+            Affiche la carte de révison sur le canvas a un emplacement donné en paramètre ('x', 'y'). 
+            Si 'answer' est True la réponse est affichée sur la carte sinon la question est affichée.
 
         @pré:
-            * 'canvas' est un objet de type Canvas Tkinter,
-            * 'card' est un objet avec des attributs 'question' et 'answer', contenant le texte de la question et de la réponse,
-            * 'x' et 'y' sont des int représentant les coordonnées de l'origine de la carte sur le canevas,
-            * 'width' et 'height' sont des int représentant la largeur et la hauteur de la carte.
+            * 'canvas' est un objet Canvas de Tkinter,
+            * 'card' est un objet ayant pour attributs 'question' et 'answer', elle contient les textes de la question et de la réponse,
+            * 'x' et 'y' sont des int qui représentent les coordonnées de l'origine de la carte,
+            * 'width' et 'height' sont des int qui représentent la largeur et la hauteur de la carte.
 
         @post:
-            * Une carte rectangulaire est dessinée sur le canevas avec le texte de la question ou de la réponse au centre.
+            * Une carte de largeur et hauteur spécifié est créée sur le canvas, la question ou la réponse sont inscrit au centre de celle-ci.
         """
         canvas.create_rectangle(x, y, x + width, y + height, fill='lightblue', outline='black')
         if answer:
@@ -546,15 +546,15 @@ class UI:
     def add_flashcard(self):
         """     #Mathéo
         @description :
-            Ajoute une nouvelle carte de révision avec le titre, la question, la réponse et le nom du set,
-            Efface les champs de saisie après l'ajout et met à jour le menu des sets disponibles.
+            Ajoute une nouvelle carte en incluant la question, la réponse, le titre et le nom du set.
+            Met à jours les sets disponibles et vides les champs de saisie après l'ajout d'une carte.
 
         @pré:
-            * Les entrées de 'title', 'question', 'answer', et 'set_name' sont des chaînes de caractères non vides.
+            * 'question', 'answer' et 'title' sont des strings non vides.
 
         @post:
             * Une nouvelle carte est ajoutée à l'application,
-            * Les champs de saisie sont vidés, et le menu des sets est mis à jour pour inclure le nouveau set.
+            * Les sets disponible sont mit à jours et les champs de saisie sont vidés.
         """
         title = self.title_entry.get()
         question = self.question_entry.get()
