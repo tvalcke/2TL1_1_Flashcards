@@ -521,6 +521,20 @@ class UI:
             self.set_menu.set('Choisir un set')
 
     def draw_card(self, canvas, card, x, y, width, height, answer=False):
+        """     #Mathéo
+        @description :
+            Affiche une carte de révision sur le canevas à l'emplacement spécifié. Si 'answer' 
+            est True il affiche la réponse de la carte, sinon il affiche la question.
+
+        @pré:
+            * 'canvas' est un objet de type Canvas Tkinter,
+            * 'card' est un objet avec des attributs 'question' et 'answer', contenant le texte de la question et de la réponse,
+            * 'x' et 'y' sont des int représentant les coordonnées de l'origine de la carte sur le canevas,
+            * 'width' et 'height' sont des int représentant la largeur et la hauteur de la carte.
+
+        @post:
+            * Une carte rectangulaire est dessinée sur le canevas avec le texte de la question ou de la réponse au centre.
+        """
         canvas.create_rectangle(x, y, x + width, y + height, fill='lightblue', outline='black')
         if answer:
             text = f"Réponse: {card.answer}"
@@ -530,6 +544,18 @@ class UI:
         canvas.create_text(x + width / 2, y + height / 2, text=text, font=('Courier New', 16), fill='black')
 
     def add_flashcard(self):
+        """     #Mathéo
+        @description :
+            Ajoute une nouvelle carte de révision avec le titre, la question, la réponse et le nom du set,
+            Efface les champs de saisie après l'ajout et met à jour le menu des sets disponibles.
+
+        @pré:
+            * Les entrées de 'title', 'question', 'answer', et 'set_name' sont des chaînes de caractères non vides.
+
+        @post:
+            * Une nouvelle carte est ajoutée à l'application,
+            * Les champs de saisie sont vidés, et le menu des sets est mis à jour pour inclure le nouveau set.
+        """
         title = self.title_entry.get()
         question = self.question_entry.get()
         answer = self.answer_entry.get()
