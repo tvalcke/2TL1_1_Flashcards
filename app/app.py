@@ -5,7 +5,6 @@ Dans le cadre du cours de DEV2 en 2ème année de bachelier de TI à l'EPHEC
 Chat GPT a été utilisé pour trouver un modèle de commentaires pour les méthodes
 """
 
-
 from tkinter import *
 from tkinter import ttk #je l'importe en plus car il n'est pas compris dans *
 
@@ -15,16 +14,15 @@ import csv
 import random
 import os
 
-print(os.getcwd())
-
-# Classes
 class Flashcard:
-    def __init__(self, title: str, question: str, answer: str, review_level: int = 0):
+    def __init__(self, title: str, question: str, answer: str, review_level: int = 0):  # les str des img sont des link, image_front: str, image_back: str seront à ajouter plus tard mais si le met déjà ca faios une erreur car on les utilise pas
         self.title = title
         self.question = question
         self.answer = answer
         self.review_level = review_level
         self.next_review_date = datetime.now()  # sera pour réévaluer la prochaine révision
+        #self.image_front  = image_front
+        #self.image_back  = image_back
 
     def review(self, correct: bool):
         """     #Tristan
@@ -63,7 +61,7 @@ class Flashcard:
         """
         pass
 
-class Set:  # ajout de la classe set pour regrouper les cards, à ajouter dans l'uml
+class Group:
     def __init__(self, name: str):
         self.name = name
         self.cards = []
@@ -81,6 +79,23 @@ class Set:  # ajout de la classe set pour regrouper les cards, à ajouter dans l
             * 'flashcard' est ajoutée à la liste 'self.cards'.
         """
         self.cards.append(flashcard)
+
+class Mode:
+    def __init__(self,mode_type : str, time_limit:int,review_order : str):
+        self.mode_type = mode_type
+        self.time_limit = time_limit 
+        self.review_order = review_order
+
+    def start_review(self):
+        """ La fonction 'start_revision' se trouve dans la classe UI,
+            est ce qu'il faudrait pas la mettre ici ? ou taper ca dans la clas app ? """
+        pass
+
+    def shuffle_cards(self):
+        pass
+
+    def end_review(self):
+        pass
 
 class Statistics:
     def __init__(self):
@@ -103,6 +118,20 @@ class Statistics:
         self.cards_reviewed += 1
         if correct:
             self.correct_answers += 1
+
+    def calculate_Xp(self):
+        pass
+
+    def unlock_badge(self, Xp):
+        """     #Mathéo
+        @description:
+            Débloque les badges de la classe Badge.
+        @pre:
+            * Badge est une instance de la classe Badge, le badge n'est pas encore débloqué pour l'utilisateur.
+        @post:
+            * Le badge est débloqué.
+        """
+        pass
 
     def generate_graphics(self):
         """     #Tristan
@@ -136,11 +165,17 @@ class Statistics:
         return "Nombre de cartes vues: " + str(self.cards_reviewed) + ", précision: " + str(round(accuracy, 2)) + " %."
 
 class Badge:
-    def __init__(self, name: str, description: str, attainment_conditions: str):
+    def __init__(self, name: str, description: str, attainment_conditions: str, badge_icon, date_earned  :datetime, earned:bool):
         self.name = name
         self.description = description
         self.attainment_conditions = attainment_conditions
+        self.badge_icon = badge_icon
+        self.date_earned = date_earned
+        self.earned = earned
 
+    def check_criteria(self):
+        pass
+    
     def assign_badge(self):
         """    #Thomas
         @description:
@@ -155,10 +190,14 @@ class Badge:
         pass
 
 class Reminder:
-    def __init__(self, reminder_date: date, reminder_time: time, cards_to_review: List[Flashcard]):
+    def __init__(self, reminder_date: date, reminder_time: time, cards_to_review: List[Flashcard], revision_history : list):
         self.reminder_date = reminder_date
         self.reminder_time = reminder_time
         self.cards_to_review = cards_to_review
+        self.revision_history = revision_history
+
+    def add_revision(self, date, result):
+        pass
 
     def send_reminder(self):
         """     #Thomas
@@ -173,6 +212,8 @@ class Reminder:
             * Un rappel est déclenché, demandant à l'utilisateur de réviser les cartes dans `self.cards_to_review`.
             * Le rappel peut être affiché dans l'interface utilisateur ou envoyé par un autre moyen si spécifié.
         """
+        pass
+    def get_revision_history(self):
         pass
 
 class Application:
@@ -206,7 +247,7 @@ class Application:
                     title, question, answer, set_name = i[0], i[1], i[2], i[3]
 
                     if set_name not in sets:  # Si le set n'existe pas encore
-                        sets[set_name] = Set(set_name)
+                        sets[set_name] = Group(set_name)
 
                     sets[set_name].add_flashcard(Flashcard(title, question, answer))
 
@@ -234,7 +275,7 @@ class Application:
             * Affiche un message d'erreur si l'écriture dans le fichier CSV échoue.
         """
         if set_name not in self.sets:  # Vérifie si le set existe sinon on le crée
-            self.sets[set_name] = Set(set_name)
+            self.sets[set_name] = Group(set_name)
 
         new_card = Flashcard(title, question, answer)   # créer la carte
         self.sets[set_name].add_flashcard(new_card)
@@ -260,7 +301,10 @@ class Application:
         """
         pass
 
-    def send_to_reminder(self, reminder_date: date, reminder_time: time, cards_to_review: List[Flashcard]):
+    def display_badge(self):
+        pass
+
+    def send_reminder(self, reminder_date: date, reminder_time: time, cards_to_review: List[Flashcard]):
         """     #Mathéo
         @description:
             Envoie les données a la classe reminder.
@@ -271,15 +315,7 @@ class Application:
         """
         pass
 
-    def unlock_badge(self, badge: Badge):
-        """     #Mathéo
-        @description:
-            Débloque les badges de la classe Badge.
-        @pre:
-            * Badge est une instance de la classe Badge, le badge n'est pas encore débloqué pour l'utilisateur.
-        @post:
-            * Le badge est débloqué.
-        """
+    def switch_revision_mode(mode :str):
         pass
 
 class UI:
@@ -314,7 +350,7 @@ class UI:
         self.frame.pack(expand=True)
 
         self.set_choice = StringVar(self.frame)
-        self.set_choice.set("Choisir un set")
+        self.set_choice.set("Choisir un groupe")
 
         self.set_menu = ttk.Combobox(self.frame, textvariable=self.set_choice, values=list(self.app.sets.keys()))
         self.set_menu.pack(pady=10)
