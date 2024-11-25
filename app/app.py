@@ -101,9 +101,34 @@ class Statistics:
     def __init__(self):
         self.cards_reviewed = 0
         self.correct_answers = 0
+        self.user_xp = 0
+        self.streak_count = 0.0
+
+    
+
+    def calculate_Xp(self, streak_indicator):
+        """     #Thomas
+        @description:
+            Met à jour les points d'expérience
+
+        @pre:
+            * 'streak_indicator' est un booléen qui indique si la réponse est correcte
+            * 'streak_count' est un float >= 0, incrémenté de 0.1 par bonne réponse servant de multiplicateur d'xp
+            * 'user_xp' est un float >= 0 initialisé pour suivre la progression de l'utilisateur
+
+        @post:
+            * 'user_xp' et 'streak_count' sont incrémentés si la réponse est bonne
+            * 'user_xp' n'est pas incrémenté et 'streak_count' est remis à 1 si la réponse est mauvaise
+        """
+        if streak_indicator:
+            self.user_xp += int(100 * (self.streak_count + 1))
+            self.streak_count += 0.1
+        else:
+            self.streak_count = 0.0
+            
 
     def calculate_progress(self, correct: bool):
-        """     #Tristan
+        """     #Tristan + Thomas
         @description:
             Met à jour les statistiques de révision
         
@@ -114,13 +139,13 @@ class Statistics:
         @post:
             * 'self.cards_reviewed' est incrémenté de 1
             * 'self.correct_answers' est incrémenté de 1 si correct est True
+            * appelle la méthode 'calculate_xp' pour mettre à jour l'expérience
         """
         self.cards_reviewed += 1
         if correct:
             self.correct_answers += 1
 
-    def calculate_Xp(self):
-        pass
+        Statistics.calculate_Xp(self, correct)
 
     def unlock_badge(self, Xp):
         """     #Mathéo
@@ -147,22 +172,28 @@ class Statistics:
         """
         pass
 
-    def display(self):  # sert pour le mvp, pas encore besoin de generate_graphics
+    def send_stats(self):  # sert pour le mvp, pas encore besoin de generate_graphics
         """    #Thomas
         @description:
-            Calcule et retourne un résumé des statistiques de révision (cartes révisées et précision).
+            Calcule et retourne un résumé des statistiques de révision.
     
         @pre:
-            * `cards_reviewed` et `correct_answers` sont des entiers, avec `cards_reviewed >= 0`.
+            * 'cards_reviewed' est un entier >= 0 indiquant combien de cartes on été revues
+            * 'correct_answers' est un entier >= 0 indiquant combien de bonnes réponses on été données
+            * 'accuracy' est un float >= 0 indiquant le pourcentage de réussite de la session de révision actuelle
+                il est calculé par le nombre de bonnes réponses divisé par le total de cartes revues
+            * 'user_xp' est un entier >= 0 représentant le total de points d'expérience de l'utilisateur
+            * 'streak_count est un float >= 0 utilisé pour calculer le nombre de cartes réussies d'affilée
     
         @post:
-            * Retourne une chaîne décrivant le nombre de cartes vues et la précision en pourcentage.
+            * Retourne une chaîne décrivant le nombre de cartes vues, la précision en pourcentage, les points d'XP et le combo actuel.
+            * Le combo actuel est égal à 'streak_count' * 10
         """
         if self.cards_reviewed > 0:
             accuracy = (self.correct_answers / self.cards_reviewed) * 100
         else:
             accuracy = 0
-        return "Nombre de cartes vues: " + str(self.cards_reviewed) + ", précision: " + str(round(accuracy, 2)) + " %."
+        return "Nombre de cartes vues: " + str(self.cards_reviewed) + ", précision: " + str(round(accuracy, 2)) + " %. \n\nXP: " + str(self.user_xp) + " Combo :" + str(int(self.streak_count * 10))
 
 class Badge:
     def __init__(self, name: str, description: str, attainment_conditions: str, badge_icon, date_earned  :datetime, earned:bool):
@@ -380,7 +411,7 @@ class UI:
         self.incorrect_button = Button(self.button_frame, text="Incorrect", command=None, bg='red')
         self.incorrect_button.grid(row=0, column=2, padx=5, pady=5)
 
-        self.stats_label = Label(self.frame, text=self.app.stats.display(), font=('Courier New', 12), bg="white", fg="black")
+        self.stats_label = Label(self.frame, text=self.app.stats.send_stats(), font=('Courier New', 12), bg="white", fg="black")
         self.stats_label.pack()
 
         self.add_card_frame = Frame(self.frame, bg="white")
@@ -537,7 +568,7 @@ class UI:
         """
         card.review(correct)
         self.app.stats.calculate_progress(correct)
-        self.stats_label.config(text=self.app.stats.display())
+        self.stats_label.config(text=self.app.stats.send_stats())
         self.start_revision()
 
     def update_set_menu(self):
