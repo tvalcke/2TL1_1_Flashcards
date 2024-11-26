@@ -7,6 +7,7 @@ Chat GPT a été utilisé pour trouver un modèle de commentaires pour les méth
 
 from tkinter import *
 from tkinter import ttk #je l'importe en plus car il n'est pas compris dans *
+from tkinter import messagebox
 
 from datetime import date, time, datetime, timedelta
 from typing import List, Dict
@@ -355,6 +356,7 @@ class UI:
         self.app = app
         self.setup_ui()
 
+
     def setup_ui(self):
         """     #Mathéo
         @description:
@@ -369,15 +371,25 @@ class UI:
         self.window.geometry('1920x1080')
         self.window.minsize(600, 900)
         self.window.iconbitmap('images/logobidon.ico')
-        self.window.config(background='white')
+        self.window.config(background='#f5f5f5')
 
-        self.titleFrame = Frame(self.window, bg='white')
+        self.titleFrame = Frame(self.window, bg='#f5f5f5')
         self.titleFrame.pack(expand=True)
 
-        self.label_title = Label(self.titleFrame, text='Bienvenue Mr Jean-Révise', font=('Courier New', 30), bg="white", fg='black')
+        self.menubar = Menu(self.window)
+        self.settingsmenu = Menu(self.menubar, tearoff=0)
+        self.menubar.add_cascade(label="Settings", menu=self.settingsmenu)
+        self.settingsmenu.add_command(label='Dark Theme', command=self.toggle_mode)
+        self.settingsmenu.add_separator()
+        self.settingsmenu.add_command(label='Fermer Application', command=self.on_closing)
+        self.window.config(menu=self.menubar)
+
+
+
+        self.label_title = Label(self.titleFrame, text='Bienvenue Mr Jean-Révise', font=('Helvetica', 30), bg="#f5f5f5", fg='black')
         self.label_title.pack()
 
-        self.frame = Frame(self.window, bg='white')
+        self.frame = Frame(self.window, bg='#f5f5f5')
         self.frame.pack(expand=True)
 
         self.set_choice = StringVar(self.frame)
@@ -387,54 +399,62 @@ class UI:
         self.set_menu.pack(pady=10)
         self.set_menu.config(width=20)
 
-        self.canvas = Canvas(self.frame, width=400, height=300, bg='white')
+        self.canvas = Canvas(self.frame, width=400, height=300, bg='#f5ebe0')
         self.canvas.pack(pady=20)
 
-        self.start_button = Button(self.frame, text="Commencer la révision", command=self.start_revision, bg='blue', fg='white')
+        self.start_button = Button(self.frame, text="Commencer la révision", command=self.start_revision, bg='#468faf', fg='white')
         self.start_button.pack(pady=5)
 
-        self.toggle_button = Button(self.window, text='Mode Sombre', command=self.toggle_mode, bg='lightgray', fg='black')
-        self.toggle_button.place(relx=1.0, rely=0.0, anchor='ne')
+        #self.toggle_button = Button(self.window, text='Mode Sombre', command=self.toggle_mode, bg='lightgray', fg='black')
+        #self.toggle_button.place(relx=1.0, rely=0.0, anchor='ne')
 
-        self.question_label = Label(self.frame, text="", font=('Courier New', 20), bg="white", fg="black")
+        self.question_label = Label(self.frame, text="", font=('Courier New', 20), bg="#f5f5f5", fg="black")
         self.question_label.pack()
 
-        self.button_frame = Frame(self.frame, bg="white")
+        self.button_frame = Frame(self.frame, bg="#f5f5f5")
         self.button_frame.pack(pady=20)
 
-        self.answer_button = Button(self.button_frame, text="Montrer la réponse", command=None, bg='lightgray')
+        self.answer_button = Button(self.button_frame, text="Montrer la réponse", command=None, bg='#adb5bd')
         self.answer_button.grid(row=0, column=1, padx=5, pady=1)
 
-        self.correct_button = Button(self.button_frame, text="Correct", command=None, bg='green')
+        self.correct_button = Button(self.button_frame, text="Correct", command=None, bg='#55a630')
         self.correct_button.grid(row=0, column=0, padx=5, pady=5)
 
-        self.incorrect_button = Button(self.button_frame, text="Incorrect", command=None, bg='red')
+        self.incorrect_button = Button(self.button_frame, text="Incorrect", command=None, bg='#e71d36')
         self.incorrect_button.grid(row=0, column=2, padx=5, pady=5)
 
-        self.stats_label = Label(self.frame, text=self.app.stats.send_stats(), font=('Courier New', 12), bg="white", fg="black")
+        self.stats_label = Label(self.frame, text=self.app.stats.send_stats(), font=('Courier New', 12), bg="#f5f5f5", fg="black")
         self.stats_label.pack()
 
-        self.add_card_frame = Frame(self.frame, bg="white")
+        self.add_card_frame = Frame(self.frame, bg="#f5f5f5")
         self.add_card_frame.pack(pady=10)
 
-        Label(self.add_card_frame, text="Question:", font=('Courier New', 12), bg="white").grid(row=0, column=0, padx=5, pady=5)
+        Label(self.add_card_frame, text="Question:", font=('Courier New', 12), bg="#f5f5f5").grid(row=0, column=0, padx=5, pady=5)
         self.question_entry = Entry(self.add_card_frame, font=('Courier New', 12), width=30)
         self.question_entry.grid(row=0, column=1, padx=5, pady=5)
 
-        Label(self.add_card_frame, text="Réponse:", font=('Courier New', 12), bg="white").grid(row=1, column=0, padx=5, pady=5)
+        Label(self.add_card_frame, text="Réponse:", font=('Courier New', 12), bg="#f5f5f5").grid(row=1, column=0, padx=5, pady=5)
         self.answer_entry = Entry(self.add_card_frame, font=('Courier New', 12), width=30)
         self.answer_entry.grid(row=1, column=1, padx=5, pady=5)
 
-        Label(self.add_card_frame, text="Titre:", font=('Courier New', 12), bg="white").grid(row=2, column=0, padx=5, pady=5)
+        Label(self.add_card_frame, text="Titre:", font=('Courier New', 12), bg="#f5f5f5").grid(row=2, column=0, padx=5, pady=5)
         self.title_entry = Entry(self.add_card_frame, font=('Courier New', 12), width=30)
         self.title_entry.grid(row=2, column=1, padx=5, pady=5)
 
-        Label(self.add_card_frame, text="Set:", font=('Courier New', 12), bg="white").grid(row=3, column=0, padx=5, pady=5)
+        Label(self.add_card_frame, text="Set:", font=('Courier New', 12), bg="#f5f5f5").grid(row=3, column=0, padx=5, pady=5)
         self.set_entry = Entry(self.add_card_frame, font=('Courier New', 12), width=30)
         self.set_entry.grid(row=3, column=1, padx=5, pady=5)
 
-        self.add_button = Button(self.add_card_frame, text="Ajouter une flashcard", command=self.add_flashcard, bg='orange')
+        self.add_button = Button(self.add_card_frame, text="Ajouter une flashcard", command=self.add_flashcard, bg='#f6aa1c')
         self.add_button.grid(row=4, column=0, columnspan=2, pady=10)
+
+        self.window.protocol("WM_DELETE_WINDOW", self.on_closing)
+
+
+    def on_closing(self):
+        if messagebox.askyesno(title="Fermer ?", message="Vous voulez vraiment fermer l'app ?"):
+            self.window.destroy()
+            
 
     def toggle_mode(self):
         """     #Mathéo
@@ -445,7 +465,7 @@ class UI:
         @post:
             * Change l'affichage entre le Dark mode et Light mode
         """
-        if self.window.cget('bg') == 'white':
+        if self.window.cget('bg') == '#f5f5f5':
             # Mode sombre
             self.window.config(background='black')
             self.titleFrame.config(background='black')
@@ -473,26 +493,26 @@ class UI:
 
         else:
             # Mode clair
-            self.window.config(background='white')
-            self.titleFrame.config(background='white')
-            self.frame.config(background='white')
-            self.label_title.config(bg='white', fg='black')
-            self.set_menu.config(background='white', foreground='black')
-            self.canvas.config(bg='white')
-            self.start_button.config(bg='blue', fg='white')
-            self.toggle_button.config(bg='lightgray', fg='black', text='Mode Sombre')
-            self.question_label.config(bg='white', fg='black')
-            self.button_frame.config(bg='white')
-            self.answer_button.config(bg='lightgray', fg='black')
-            self.correct_button.config(bg='green', fg='black')
-            self.incorrect_button.config(bg='red', fg='black')
-            self.stats_label.config(bg='white', fg='black')
-            self.add_card_frame.config(bg='white')
-            self.question_entry.config(bg='white', fg='black')
-            self.answer_entry.config(bg='white', fg='black')
-            self.title_entry.config(bg='white', fg='black')
-            self.set_entry.config(bg='white', fg='black')
-            self.add_button.config(bg='orange', fg='black')
+            self.window.config(background='#f5f5f5')
+            self.titleFrame.config(background='#f5f5f5')
+            self.frame.config(background='#f5f5f5')
+            self.label_title.config(bg='#f5f5f5', fg='black')
+            self.set_menu.config(background='#f5f5f5', foreground='black')
+            self.canvas.config(bg='#f5ebe0')
+            self.start_button.config(bg='blue', fg='#f5f5f5')
+            #self.toggle_button.config(bg='lightgray', fg='black', text='Mode Sombre')
+            self.question_label.config(bg='#f5f5f5', fg='black')
+            self.button_frame.config(bg='#f5f5f5')
+            self.answer_button.config(bg='#adb5bd', fg='black')
+            self.correct_button.config(bg='#55a630', fg='black')
+            self.incorrect_button.config(bg='#e71d36', fg='black')
+            self.stats_label.config(bg='#f5f5f5', fg='black')
+            self.add_card_frame.config(bg='#f5f5f5')
+            self.question_entry.config(bg='#f5f5f5', fg='black')
+            self.answer_entry.config(bg='#f5f5f5', fg='black')
+            self.title_entry.config(bg='#f5f5f5', fg='black')
+            self.set_entry.config(bg='#f5f5f5', fg='black')
+            self.add_button.config(bg='#f6aa1c', fg='black')
 
             if not self.set_menu.get():
                 self.set_menu.set('Choisir un set')
