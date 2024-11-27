@@ -373,9 +373,11 @@ class UI:
         self.window.iconbitmap('images/logobidon.ico')
         self.window.config(background='#f5f5f5')
 
+        # Frame pour le titre
         self.titleFrame = Frame(self.window, bg='#f5f5f5')
-        self.titleFrame.pack(expand=True)
+        self.titleFrame.pack(expand=True, anchor='center')
 
+        # Menu
         self.menubar = Menu(self.window)
         self.settingsmenu = Menu(self.menubar, tearoff=0)
         self.menubar.add_cascade(label="Settings", menu=self.settingsmenu)
@@ -384,36 +386,38 @@ class UI:
         self.settingsmenu.add_command(label='Fermer Application', command=self.on_closing)
         self.window.config(menu=self.menubar)
 
-
-
+        # Label Titre
         self.label_title = Label(self.titleFrame, text='Bienvenue Mr Jean-Révise', font=('Helvetica', 30), bg="#f5f5f5", fg='black')
         self.label_title.pack()
 
+        # Frame principale
         self.frame = Frame(self.window, bg='#f5f5f5')
-        self.frame.pack(expand=True)
+        self.frame.pack(expand=True, fill='both', anchor='center')
 
+        # Choix de set
         self.set_choice = StringVar(self.frame)
         self.set_choice.set("Choisir un groupe")
-
         self.set_menu = ttk.Combobox(self.frame, textvariable=self.set_choice, values=list(self.app.sets.keys()))
         self.set_menu.pack(pady=10)
         self.set_menu.config(width=20)
 
+        # Canvas
         self.canvas = Canvas(self.frame, width=400, height=300, bg='#f5ebe0')
-        self.canvas.pack(pady=20)
+        self.canvas.pack(pady=20, expand=True)
 
+        # Bouton commencer
         self.start_button = Button(self.frame, text="Commencer la révision", command=self.start_revision, bg='#468faf', fg='white')
         self.start_button.pack(pady=5)
 
-        #self.toggle_button = Button(self.window, text='Mode Sombre', command=self.toggle_mode, bg='lightgray', fg='black')
-        #self.toggle_button.place(relx=1.0, rely=0.0, anchor='ne')
-
+        # Label pour la question
         self.question_label = Label(self.frame, text="", font=('Courier New', 20), bg="#f5f5f5", fg="black")
         self.question_label.pack()
 
+        # Frame pour les boutons de réponse
         self.button_frame = Frame(self.frame, bg="#f5f5f5")
-        self.button_frame.pack(pady=20)
+        self.button_frame.pack(pady=20, anchor='center')
 
+        # Boutons pour réponses
         self.answer_button = Button(self.button_frame, text="Montrer la réponse", command=None, bg='#adb5bd')
         self.answer_button.grid(row=0, column=1, padx=5, pady=1)
 
@@ -423,12 +427,15 @@ class UI:
         self.incorrect_button = Button(self.button_frame, text="Incorrect", command=None, bg='#e71d36')
         self.incorrect_button.grid(row=0, column=2, padx=5, pady=5)
 
+        # Statistiques
         self.stats_label = Label(self.frame, text=self.app.stats.send_stats(), font=('Courier New', 12), bg="#f5f5f5", fg="black")
         self.stats_label.pack()
 
+        # Frame pour ajouter une flashcard
         self.add_card_frame = Frame(self.frame, bg="#f5f5f5")
-        self.add_card_frame.pack(pady=10)
+        self.add_card_frame.pack(pady=10, anchor='center')
 
+        # Entrées pour les flashcards
         Label(self.add_card_frame, text="Question:", font=('Courier New', 12), bg="#f5f5f5").grid(row=0, column=0, padx=5, pady=5)
         self.question_entry = Entry(self.add_card_frame, font=('Courier New', 12), width=30)
         self.question_entry.grid(row=0, column=1, padx=5, pady=5)
@@ -445,10 +452,13 @@ class UI:
         self.set_entry = Entry(self.add_card_frame, font=('Courier New', 12), width=30)
         self.set_entry.grid(row=3, column=1, padx=5, pady=5)
 
+        # Bouton Ajouter une flashcard
         self.add_button = Button(self.add_card_frame, text="Ajouter une flashcard", command=self.add_flashcard, bg='#f6aa1c')
         self.add_button.grid(row=4, column=0, columnspan=2, pady=10)
 
+        # Fermer l'application proprement
         self.window.protocol("WM_DELETE_WINDOW", self.on_closing)
+
 
 
     def on_closing(self):
