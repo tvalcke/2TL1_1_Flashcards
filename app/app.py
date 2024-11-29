@@ -104,6 +104,12 @@ class Statistics:
         self.correct_answers = 0
         self.user_xp = 0
         self.streak_count = 0.0
+        self.badges = [
+            Badge("Débutant", "Atteignez 100 XP.", 100),
+            Badge("Intermédiaire", "Atteignez 250 XP.", 250),
+            Badge("Expert", "Atteignez 500 XP.", 500),
+            Badge("Maître", "Atteignez 1000 XP.", 1000),
+        ]
 
     
 
@@ -124,9 +130,32 @@ class Statistics:
         if streak_indicator:
             self.user_xp += int(100 * (self.streak_count + 1))
             self.streak_count += 0.1
+            self.unlock_badge()
         else:
             self.streak_count = 0.0
-            
+        
+
+    def unlock_badge(self):
+        """
+        Vérifie les badges non débloqués et assigne ceux dont le palier d'XP est atteint.
+        """
+        for badge in self.badges:
+            if badge.check_criteria(self.user_xp):
+                badge.assign_badge()
+                print(self.user_xp)
+
+    def send_badges(self):
+        """
+        Retourne le badge le plus élevé actuellement débloqué.
+        """
+        unlocked_badges = [badge for badge in self.badges if badge.earned]
+        print("go")
+        if unlocked_badges:
+            # Retourner le badge avec le plus grand xp_threshold
+            latest_badge = max(unlocked_badges, key=lambda b: b.xp_threshold)
+            return str(latest_badge)
+        return "Aucun badge débloqué pour le moment."
+     
 
     def calculate_progress(self, correct: bool):
         """     #Tristan + Thomas
@@ -147,17 +176,6 @@ class Statistics:
             self.correct_answers += 1
 
         Statistics.calculate_Xp(self, correct)
-
-    def unlock_badge(self, Xp):
-        """     #Mathéo
-        @description:
-            Débloque les badges de la classe Badge.
-        @pre:
-            * Badge est une instance de la classe Badge, le badge n'est pas encore débloqué pour l'utilisateur.
-        @post:
-            * Le badge est débloqué.
-        """
-        pass
 
     def generate_graphics(self):
         """     #Tristan
@@ -197,16 +215,20 @@ class Statistics:
         return "Nombre de cartes vues: " + str(self.cards_reviewed) + ", précision: " + str(round(accuracy, 2)) + " %. \n\nXP: " + str(self.user_xp) + " Combo :" + str(int(self.streak_count * 10))
 
 class Badge:
-    def __init__(self, name: str, description: str, attainment_conditions: str, badge_icon, date_earned  :datetime, earned:bool):
+    def __init__(self, name: str, description: str, xp_threshold: int, badge_icon=None):
         self.name = name
         self.description = description
-        self.attainment_conditions = attainment_conditions
+        self.xp_threshold = xp_threshold
         self.badge_icon = badge_icon
-        self.date_earned = date_earned
-        self.earned = earned
+        self.date_earned = None
+        self.earned = False
 
-    def check_criteria(self):
-        pass
+    def check_criteria(self, user_xp: int):
+        """
+        @description :
+            Verifie si le palier d'XP est atteint pour debloquer ce badge
+        """
+        return user_xp >= self.xp_threshold and not self.earned
     
     def assign_badge(self):
         """    #Thomas
@@ -219,7 +241,12 @@ class Badge:
         @post:
             * Attribue un badge si les conditions sont remplies (implémentation future).
         """
-        pass
+        self.earned = True
+        self.date_earned = datetime.now()
+
+    def __str__(self):
+        return f"Badge: {self.name}, Description: {self.description}, Date Earned: {self.date_earned}"
+
 
 class Reminder:
     def __init__(self, reminder_date: date, reminder_time: time, cards_to_review: List[Flashcard], revision_history : list):
@@ -370,7 +397,7 @@ class UI:
         self.window.title('FlashCards')
         self.window.geometry('1920x1080')
         self.window.minsize(600, 900)
-        self.window.iconbitmap('images/logobidon.ico')
+        #self.window.iconbitmap('images/logobidon.ico')
         self.window.config(background='#f5f5f5')
 
         # Frame pour le titre
@@ -393,6 +420,14 @@ class UI:
         # Frame principale
         self.frame = Frame(self.window, bg='#f5f5f5')
         self.frame.pack(expand=True, fill='both', anchor='center')
+
+        # Frame pour les badges, en haut a droite
+        self.badge_frame = Frame(self.frame, bg='#e5884b', width=200, height=100)
+        self.badge_frame.place(relx=0.98, rely=0.0, anchor='ne')  # Positionne en haut à droite
+
+        # Label badges
+        self.badge_label = Label(self.badge_frame, text=self.app.stats.send_badges(), font=('Helvetica', 12), bg='#e5884b', fg='white')
+        self.badge_label.pack(pady=10, padx=10)  # Ajout de marges
 
         # Choix de set
         self.set_choice = StringVar(self.frame)
@@ -436,23 +471,19 @@ class UI:
         self.add_card_frame.pack(pady=10, anchor='center')
 
         # Entrées pour les flashcards
-        self.question_entry_label = Label(self.add_card_frame, text="Question:", font=('Courier New', 12), bg="#f5f5f5")
-        self.question_entry_label.grid(row=0, column=0, padx=5, pady=5)
+        Label(self.add_card_frame, text="Question:", font=('Courier New', 12), bg="#f5f5f5").grid(row=0, column=0, padx=5, pady=5)
         self.question_entry = Entry(self.add_card_frame, font=('Courier New', 12), width=30)
         self.question_entry.grid(row=0, column=1, padx=5, pady=5)
 
-        self.answer_entry_label = Label(self.add_card_frame, text="Réponse:", font=('Courier New', 12), bg="#f5f5f5")
-        self.answer_entry_label.grid(row=1, column=0, padx=5, pady=5)
+        Label(self.add_card_frame, text="Réponse:", font=('Courier New', 12), bg="#f5f5f5").grid(row=1, column=0, padx=5, pady=5)
         self.answer_entry = Entry(self.add_card_frame, font=('Courier New', 12), width=30)
         self.answer_entry.grid(row=1, column=1, padx=5, pady=5)
 
-        self.title_entry_label = Label(self.add_card_frame, text="Titre:", font=('Courier New', 12), bg="#f5f5f5")
-        self.title_entry_label.grid(row=2, column=0, padx=5, pady=5)
+        Label(self.add_card_frame, text="Titre:", font=('Courier New', 12), bg="#f5f5f5").grid(row=2, column=0, padx=5, pady=5)
         self.title_entry = Entry(self.add_card_frame, font=('Courier New', 12), width=30)
         self.title_entry.grid(row=2, column=1, padx=5, pady=5)
 
-        self.set_entry_label = Label(self.add_card_frame, text="Set:", font=('Courier New', 12), bg="#f5f5f5")
-        self.set_entry_label.grid(row=3, column=0, padx=5, pady=5)
+        Label(self.add_card_frame, text="Set:", font=('Courier New', 12), bg="#f5f5f5").grid(row=3, column=0, padx=5, pady=5)
         self.set_entry = Entry(self.add_card_frame, font=('Courier New', 12), width=30)
         self.set_entry.grid(row=3, column=1, padx=5, pady=5)
 
@@ -483,12 +514,12 @@ class UI:
             # Mode sombre
             self.window.config(background='black')
             self.titleFrame.config(background='black')
-            self.frame.config(background='#000')
+            self.frame.config(background='black')
             self.label_title.config(bg='black', fg='white')
-            self.set_menu.config(background='gray', foreground='black')
+            self.set_menu.config(background='gray', foreground='white')
             self.canvas.config(bg='black')
             self.start_button.config(bg='darkgray', fg='white')
-            #self.toggle_button.config(bg='gray', fg='white', text='Mode Clair')
+            self.toggle_button.config(bg='gray', fg='white', text='Mode Clair')
             self.question_label.config(bg='black', fg='white')
             self.button_frame.config(bg='black')
             self.answer_button.config(bg='darkgray', fg='white')
@@ -496,10 +527,6 @@ class UI:
             self.incorrect_button.config(bg='darkred', fg='white')
             self.stats_label.config(bg='black', fg='white')
             self.add_card_frame.config(bg='black')
-            self.question_entry_label.config(bg='black', fg='white')
-            self.answer_entry_label.config(bg='black', fg='white')
-            self.title_entry_label.config(bg='black', fg='white')
-            self.set_entry_label.config(bg='black', fg='white')
             self.question_entry.config(bg='gray', fg='white')
             self.answer_entry.config(bg='gray', fg='white')
             self.title_entry.config(bg='gray', fg='white')
@@ -526,10 +553,6 @@ class UI:
             self.incorrect_button.config(bg='#e71d36', fg='black')
             self.stats_label.config(bg='#f5f5f5', fg='black')
             self.add_card_frame.config(bg='#f5f5f5')
-            self.question_entry_label.config(bg='#f5f5f5', fg='black')
-            self.answer_entry_label.config(bg='#f5f5f5', fg='black')
-            self.title_entry_label.config(bg='#f5f5f5', fg='black')
-            self.set_entry_label.config(bg='#f5f5f5', fg='black')
             self.question_entry.config(bg='#f5f5f5', fg='black')
             self.answer_entry.config(bg='#f5f5f5', fg='black')
             self.title_entry.config(bg='#f5f5f5', fg='black')
@@ -611,6 +634,7 @@ class UI:
         card.review(correct)
         self.app.stats.calculate_progress(correct)
         self.stats_label.config(text=self.app.stats.send_stats())
+        self.badge_label.config(text=self.app.stats.send_badges())
         self.start_revision()
 
     def update_set_menu(self):
