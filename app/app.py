@@ -4,63 +4,82 @@ Dans le cadre du cours de DEV2 en 2ème année de bachelier de TI à l'EPHEC
 
 Chat GPT a été utilisé pour trouver un modèle de commentaires pour les méthodes
 """
-
 from tkinter import *
-from tkinter import ttk #je l'importe en plus car il n'est pas compris dans *
+from tkinter import Label
+from tkinter import Frame
+from tkinter import StringVar
+from tkinter import Canvas
+from tkinter import Button
+from tkinter import Entry
+from tkinter import Menu
+from tkinter import ttk  # je l'importe en plus car il n'est pas compris dans *
 from tkinter import messagebox
 
 from datetime import date, time, datetime, timedelta
-from typing import List, Dict
+from typing import List
 import csv
 import random
-import os
+
 
 class Flashcard:
-    def __init__(self, title: str, question: str, answer: str, review_level: int = 0):  # les str des img sont des link, image_front: str, image_back: str seront à ajouter plus tard mais si le met déjà ca faios une erreur car on les utilise pas
+    def __init__(self, title: str, question: str, answer: str,
+                 review_level: int = 0):
         self.title = title
         self.question = question
         self.answer = answer
         self.review_level = review_level
-        self.next_review_date = datetime.now()  # sera pour réévaluer la prochaine révision
-        #self.image_front  = image_front
-        #self.image_back  = image_back
+        # Réévaluer la prochaine révision:
+        self.next_review_date = datetime.now()
+        # self.image_front  = image_front
+        # self.image_back  = image_back
 
     def review(self, correct: bool):
         """     #Tristan
-        @description : 
-            Met à jour le niveau de révision ('review_level') de l'objet en fonction de la réponse de l'utilisateur.
-            Ajuste la date de la prochaine révision ('next_review_date') en fonction du niveau de révision atteint
+        @description :
+            Met à jour le niveau de révision ('review_level') de l'objet
+            en fonction de la réponse de l'utilisateur.
+            Ajuste la date de la prochaine révision ('next_review_date')
+            en fonction du niveau de révision atteint
 
         @pré:
-            * 'self.review_level' ets un entier supérieur ou égal à zéro. Il représente le niveau de révision actuel d'une carte
-            * 'self.next_review_date' est de type 'datetime', il représente la date de la prochaine révision
+            * 'self.review_level' ets un entier supérieur ou égal à zéro.
+            Il représente le niveau de révision actuel d'une carte
+            * 'self.next_review_date' est de type 'datetime', il représente la
+            date de la prochaine révision
 
         @post:
-            * Si 'correct' est True, 'self.review_level' va être incrémenter de 1
-            * Si `correct` est False et que `self.review_level` est plus grand ou égal à 1, `self.review_level` est décrémenté de 1.
-            * `self.next_review_date` est mis à jour pour être la date actuelle plus `2 ** self.review_level` jours.
+            * Si 'correct' est True, 'self.review_level' va être incrémenter
+            de 1
+            * Si `correct` est False et que `self.review_level` est plus grand
+            ou égal à 1, `self.review_level` est décrémenté de 1.
+            * `self.next_review_date` est mis à jour pour être la
+            date actuelle plus `2 ** self.review_level` jours.
         """
         if correct:
             self.review_level += 1
         elif self.review_level >= 1:
             self.review_level -= 1
+        # ajuste la prochaine révision par rapport au niveau de connaissance :
+        self.next_review_date = datetime.now() + timedelta(
+            days=2 ** self.review_level
+        )
 
-        self.next_review_date = datetime.now() + timedelta(days=2 ** self.review_level)  # ajuste la prochaine révision par rapport au niveau de connaissance
-
-    def evaluate_response(self, user_response : str, correct_answer : str):
+    def evaluate_response(self, user_response: str, correct_answer: str):
         """     #Tristan
         @description:
-            Évalue la réponse donnée par l'utilisateur pour une carte en la comparant avec la bonne réponse
-        
+            Évalue la réponse donnée par l'utilisateur pour une carte en la
+            comparant avec la bonne réponse
         @pré:
-            * 'user_response' est un str qui représentela réponse donnée par le user
+            * 'user_response' est un str qui représentela réponse donnée par
+            le user
             * 'correct_answer' est un str qui représente la réponse correcte
-
         @post:
             * Retourne True si 'user_response' correspond à 'correct_answer'
-            * Retourne False si 'user_response' ne correspond pas à 'correct_answer'
+            * Retourne False si 'user_response' ne correspond
+            pas à 'correct_answer'
         """
         pass
+
 
 class Group:
     def __init__(self, name: str):
@@ -71,25 +90,26 @@ class Group:
         """     #Tristan
         @description:
             Ajoute une nouvelle flashcard à la liste des cartes dans le set
-        
         @pre:
-            * 'flashcard' est une instance de la classe Flashcard qui contient une question et une réponse(plus un titre et le set correspondant)
+            * 'flashcard' est une instance de la classe Flashcard qui contient
+            une question et une réponse(plus un titre et le set correspondant)
             * 'self.cards' est une liste de flashcards déjà initialisée
-        
         @post:
             * 'flashcard' est ajoutée à la liste 'self.cards'.
         """
         self.cards.append(flashcard)
 
+
 class Mode:
-    def __init__(self,mode_type : str, time_limit:int,review_order : str):
+    def __init__(self, mode_type: str, time_limit: int, review_order: str):
         self.mode_type = mode_type
-        self.time_limit = time_limit 
+        self.time_limit = time_limit
         self.review_order = review_order
 
     def start_review(self):
         """ La fonction 'start_revision' se trouve dans la classe UI,
-            est ce qu'il faudrait pas la mettre ici ? ou taper ca dans la clas app ? """
+            est ce qu'il faudrait pas la mettre ici ? ou taper
+            ca dans la clas app ? """
         pass
 
     def shuffle_cards(self):
@@ -97,6 +117,7 @@ class Mode:
 
     def end_review(self):
         pass
+
 
 class Statistics:
     def __init__(self):
@@ -111,21 +132,24 @@ class Statistics:
             Badge("Maître", "Atteignez 1000 XP.", 1000),
         ]
 
-    
-
     def calculate_Xp(self, streak_indicator):
         """     #Thomas
         @description:
             Met à jour les points d'expérience
 
         @pre:
-            * 'streak_indicator' est un booléen qui indique si la réponse est correcte
-            * 'streak_count' est un float >= 0, incrémenté de 0.1 par bonne réponse servant de multiplicateur d'xp
-            * 'user_xp' est un float >= 0 initialisé pour suivre la progression de l'utilisateur
+            * 'streak_indicator' est un booléen qui indique
+            si la réponse est correcte
+            * 'streak_count' est un float >= 0, incrémenté de 0.1 par bonne
+            réponse servant de multiplicateur d'xp
+            * 'user_xp' est un float >= 0 initialisé pour suivre la
+            progression de l'utilisateur
 
         @post:
-            * 'user_xp' et 'streak_count' sont incrémentés si la réponse est bonne
-            * 'user_xp' n'est pas incrémenté et 'streak_count' est remis à 1 si la réponse est mauvaise
+            * 'user_xp' et 'streak_count' sont incrémentés si la
+            réponse est bonne
+            * 'user_xp' n'est pas incrémenté et 'streak_count' est remis à 1
+            si la réponse est mauvaise
         """
         if streak_indicator:
             self.user_xp += int(100 * (self.streak_count + 1))
@@ -133,11 +157,11 @@ class Statistics:
             self.unlock_badge()
         else:
             self.streak_count = 0.0
-        
 
     def unlock_badge(self):
         """
-        Vérifie les badges non débloqués et assigne ceux dont le palier d'XP est atteint.
+        Vérifie les badges non débloqués et assigne ceux dont le palier d'XP
+        est atteint.
         """
         for badge in self.badges:
             if badge.check_criteria(self.user_xp):
@@ -155,17 +179,15 @@ class Statistics:
             latest_badge = max(unlocked_badges, key=lambda b: b.xp_threshold)
             return str(latest_badge)
         return "Aucun badge débloqué pour le moment."
-     
 
     def calculate_progress(self, correct: bool):
         """     #Tristan + Thomas
         @description:
             Met à jour les statistiques de révision
-        
         @pre:
             * 'correct' est un booléen qui indique si la réponse est correcte
-            * 'self.cards_reviewed' et 'self.correct_answers' sont des entiers initialisés pour suivre la progression de l'utilisateur
-        
+            * 'self.cards_reviewed' et 'self.correct_answers' sont des entiers
+            initialisés pour suivre la progression de l'utilisateur
         @post:
             * 'self.cards_reviewed' est incrémenté de 1
             * 'self.correct_answers' est incrémenté de 1 si correct est True
@@ -180,42 +202,55 @@ class Statistics:
     def generate_graphics(self):
         """     #Tristan
         @description:
-            Génère des graphiques de progression basés sur l'avancement de l'utilisateur
-        
+            Génère des graphiques de progression basés sur l'avancement de
+            l'utilisateur
         @pre:
-            * Les statistiques de progression ('self.cards_reviewed' et 'self.correct_answers') doivent être à jour
-        
+            * Les statistiques de progression ('self.cards_reviewed' et
+            'self.correct_answers') doivent être à jour
         @post:
-            * Un graphique de progression est généré et affiché dans l'interface de l'application
-            * Le graphique reflète les données actuelles des réponses correctes et du nombre total de cartes révisées
+            * Un graphique de progression est généré et affiché dans
+            l'interface de l'application
+            * Le graphique reflète les données actuelles des réponses
+            correctes et du nombre total de cartes révisées
         """
         pass
 
-    def send_stats(self):  # sert pour le mvp, pas encore besoin de generate_graphics
+    def send_stats(self):  # pour le mvp, pas encre besoin de generate_graphics
         """    #Thomas
         @description:
             Calcule et retourne un résumé des statistiques de révision.
-    
         @pre:
-            * 'cards_reviewed' est un entier >= 0 indiquant combien de cartes on été revues
-            * 'correct_answers' est un entier >= 0 indiquant combien de bonnes réponses on été données
-            * 'accuracy' est un float >= 0 indiquant le pourcentage de réussite de la session de révision actuelle
-                il est calculé par le nombre de bonnes réponses divisé par le total de cartes revues
-            * 'user_xp' est un entier >= 0 représentant le total de points d'expérience de l'utilisateur
-            * 'streak_count est un float >= 0 utilisé pour calculer le nombre de cartes réussies d'affilée
-    
+            * 'cards_reviewed' est un entier >= 0 indiquant combien de cartes
+            on été revues
+            * 'correct_answers' est un entier >= 0 indiquant combien de bonnes
+            réponses on été données
+            * 'accuracy' est un float >= 0 indiquant le pourcentage de
+            réussite de la session de révision actuelle
+                il est calculé par le nombre de bonnes réponses divisé par le
+                total de cartes revues
+            * 'user_xp' est un entier >= 0 représentant le total de points
+            d'expérience de l'utilisateur
+            * 'streak_count est un float >= 0 utilisé pour calculer le nombre
+            de cartes réussies d'affilée
         @post:
-            * Retourne une chaîne décrivant le nombre de cartes vues, la précision en pourcentage, les points d'XP et le combo actuel.
+            * Retourne une chaîne décrivant le nombre de cartes vues, la
+            précision en pourcentage, les points d'XP et le combo actuel.
             * Le combo actuel est égal à 'streak_count' * 10
         """
         if self.cards_reviewed > 0:
             accuracy = (self.correct_answers / self.cards_reviewed) * 100
         else:
             accuracy = 0
-        return "Nombre de cartes vues: " + str(self.cards_reviewed) + ", précision: " + str(round(accuracy, 2)) + " %. \n\nXP: " + str(self.user_xp) + " Combo :" + str(int(self.streak_count * 10))
+        return (
+            "Nombre de cartes vues: " + str(self.cards_reviewed) +
+            ", précision: " + str(round(accuracy, 2)) + " %. \n\nXP: "
+            + str(self.user_xp) + " Combo :" + str(int(self.streak_count * 10))
+        )
+
 
 class Badge:
-    def __init__(self, name: str, description: str, xp_threshold: int, badge_icon=None):
+    def __init__(self, name: str, description: str,
+                 xp_threshold: int, badge_icon=None):
         self.name = name
         self.description = description
         self.xp_threshold = xp_threshold
@@ -229,27 +264,32 @@ class Badge:
             Verifie si le palier d'XP est atteint pour debloquer ce badge
         """
         return user_xp >= self.xp_threshold and not self.earned
-    
+
     def assign_badge(self):
         """    #Thomas
         @description:
-            Vérifie si les conditions d'obtention sont remplies et assigne un badge à l'utilisateur.
-    
+            Vérifie si les conditions d'obtention sont remplies et assigne
+            un badge à l'utilisateur.
         @pre:
-            * `attainment_conditions` est une chaîne qui décrit les conditions nécessaires.
-    
+            * `attainment_conditions` est une chaîne qui décrit les
+            conditions nécessaires.
         @post:
-            * Attribue un badge si les conditions sont remplies (implémentation future).
+            * Attribue un badge si les conditions sont remplies
+            (implémentation future).
         """
         self.earned = True
         self.date_earned = datetime.now()
 
     def __str__(self):
-        return f"Badge: {self.name}, Description: {self.description}, Date Earned: {self.date_earned}"
+        return (
+            f"Badge: {self.name}, Description: {self.description}, "
+            f"Date Earned: {self.date_earned}"
+        )
 
 
 class Reminder:
-    def __init__(self, reminder_date: date, reminder_time: time, cards_to_review: List[Flashcard], revision_history : list):
+    def __init__(self, reminder_date: date, reminder_time: time,
+                 cards_to_review: List[Flashcard], revision_history: list):
         self.reminder_date = reminder_date
         self.reminder_time = reminder_time
         self.cards_to_review = cards_to_review
@@ -261,19 +301,24 @@ class Reminder:
     def send_reminder(self):
         """     #Thomas
         @description:
-            Envoie un rappel aux utilisateurs pour réviser les cartes de flash définies dans `cards_to_review`.
-    
+            Envoie un rappel aux utilisateurs pour réviser les cartes de flash
+            définies dans `cards_to_review`.
         @pre:
-            * `self.reminder_date` et `self.reminder_time` sont de types `date` et `time`, définissant la date et l'heure du rappel.
-            * `self.cards_to_review` est une liste de `Flashcard` contenant les cartes à réviser.
-    
+            * `self.reminder_date` et `self.reminder_time` sont de types `date`
+            et `time`, définissant la date et l'heure du rappel.
+            * `self.cards_to_review` est une liste de `Flashcard` contenant
+            les cartes à réviser.
         @post:
-            * Un rappel est déclenché, demandant à l'utilisateur de réviser les cartes dans `self.cards_to_review`.
-            * Le rappel peut être affiché dans l'interface utilisateur ou envoyé par un autre moyen si spécifié.
+            * Un rappel est déclenché, demandant à l'utilisateur de réviser
+            les cartes dans `self.cards_to_review`.
+            * Le rappel peut être affiché dans l'interface utilisateur ou
+            envoyé par un autre moyen si spécifié.
         """
         pass
+
     def get_revision_history(self):
         pass
+
 
 class Application:
     def __init__(self, app_name: str, version: str):
@@ -285,14 +330,14 @@ class Application:
     def import_flashcards_from_csv(self, file_path: str):
         """    #Thomas
         @description:
-            Importe des flashcards depuis un fichier CSV et les ajoute aux ensembles de l'application.
-    
+            Importe des flashcards depuis un fichier CSV et les ajoute aux
+            ensembles de l'application.
         @pre:
             * `file_path` est le chemin d'un fichier CSV accessible.
-        
         @post:
             * Retourne un dictionnaire de `Set` contenant les cartes importées.
-            * Affiche des messages d'erreur si le fichier n'existe pas ou si l'encodage est incorrect.
+            * Affiche des messages d'erreur si le fichier n'existe pas ou si
+            l'encodage est incorrect.
         """
         sets = {}
         try:
@@ -308,7 +353,8 @@ class Application:
                     if set_name not in sets:  # Si le set n'existe pas encore
                         sets[set_name] = Group(set_name)
 
-                    sets[set_name].add_flashcard(Flashcard(title, question, answer))
+                    sets[set_name].add_flashcard(
+                        Flashcard(title, question, answer))
 
             return sets
 
@@ -317,32 +363,41 @@ class Application:
             return sets
 
         except UnicodeDecodeError:  # Si mauvais encodage
-            print("Erreur de décodage du fichier avec l'encodage UTF-8. Vérifie l'encodage.")
+            print(
+                "Erreur de décodage du fichier avec l'encodage UTF-8."
+                "Vérifie l'encodage."
+            )
 
         return sets  # si on n'a pas pu lire ça, renvoie les sets vides
 
-    def create_flashcard(self, title: str, question: str, answer: str, set_name: str):
+    def create_flashcard(self, title: str, question: str,
+                         answer: str, set_name: str):
         """    #Thomas
         @description:
-            Crée une nouvelle flashcard et l'ajoute au set désigné, en l'enregistrant dans un fichier CSV.
-    
+            Crée une nouvelle flashcard et l'ajoute au set désigné, en
+            l'enregistrant dans un fichier CSV.
         @pre:
-            * `title`, `question`, `answer`, et `set_name` sont des chaînes non vides.
-    
+            * `title`, `question`, `answer`, et `set_name` sont des chaînes
+            non vides.
         @post:
             * La flashcard est ajoutée au set et enregistrée dans `listes.csv`.
-            * Affiche un message d'erreur si l'écriture dans le fichier CSV échoue.
+            * Affiche un message d'erreur si l'écriture dans le fichier
+            CSV échoue.
         """
-        if set_name not in self.sets:  # Vérifie si le set existe sinon on le crée
+        if set_name not in self.sets:  # Vérif si le set existe sinn on le crée
             self.sets[set_name] = Group(set_name)
 
         new_card = Flashcard(title, question, answer)   # créer la carte
         self.sets[set_name].add_flashcard(new_card)
-        print("Flashcard '" + title + "' ajoutée dans le set '" + set_name + "'.")
+        print(
+            "Flashcard '" + title + "' ajoutée dans le set '" + set_name + "'."
+        )
 
         # Ajoute la flashcard au fichier CSV
         try:
-            with open("listes.csv", mode='a', encoding='utf-8', newline='') as file:
+            with open(
+                "listes.csv", mode='a', encoding='utf-8', newline=''
+            ) as file:
                 writer = csv.writer(file)
                 writer.writerow([title, question, answer, set_name])
         except Exception as e:
@@ -363,26 +418,28 @@ class Application:
     def display_badge(self):
         pass
 
-    def send_reminder(self, reminder_date: date, reminder_time: time, cards_to_review: List[Flashcard]):
+    def send_reminder(self, reminder_date: date,
+                      reminder_time: time, cards_to_review: List[Flashcard]):
         """     #Mathéo
         @description:
             Envoie les données a la classe reminder.
         @pre:
-            * 'reminder_date' est un champ date, 'reminder_time' est un champ time, 'cards_to_review' est une liste des cartes a réviser.
+            * 'reminder_date' est un champ date, 'reminder_time' est un champ
+            time, 'cards_to_review' est une liste des cartes a réviser.
         @post:
             * Une liste des donnée reçus en paramètre.
         """
         pass
 
-    def switch_revision_mode(mode :str):
+    def switch_revision_mode(mode: str):
         pass
+
 
 class UI:
     def __init__(self, window, app):
         self.window = window
         self.app = app
         self.setup_ui()
-
 
     def setup_ui(self):
         """     #Mathéo
@@ -397,7 +454,7 @@ class UI:
         self.window.title('FlashCards')
         self.window.geometry('1920x1080')
         self.window.minsize(600, 900)
-        #self.window.iconbitmap('images/logobidon.ico')
+        # self.window.iconbitmap('images/logobidon.ico')
         self.window.config(background='#f5f5f5')
 
         # Frame pour le titre
@@ -414,7 +471,10 @@ class UI:
         self.window.config(menu=self.menubar)
 
         # Label Titre
-        self.label_title = Label(self.titleFrame, text='Bienvenue Mr Jean-Révise', font=('Helvetica', 30), bg="#f5f5f5", fg='black')
+        self.label_title = Label(
+            self.titleFrame, text='Bienvenue Mr Jean-Révise',
+            font=('Helvetica', 30), bg="#f5f5f5", fg='black'
+        )
         self.label_title.pack()
 
         # Frame principale
@@ -422,17 +482,25 @@ class UI:
         self.frame.pack(expand=True, fill='both', anchor='center')
 
         # Frame pour les badges, en haut a droite
-        self.badge_frame = Frame(self.frame, bg='#e5884b', width=200, height=100)
-        self.badge_frame.place(relx=0.98, rely=0.0, anchor='ne')  # Positionne en haut à droite
+        self.badge_frame = Frame(
+            self.frame, bg='#e5884b', width=200, height=100
+        )
+        self.badge_frame.place(relx=0.98, rely=0.0, anchor='ne')  # haut droite
 
         # Label badges
-        self.badge_label = Label(self.badge_frame, text=self.app.stats.send_badges(), font=('Helvetica', 12), bg='#e5884b', fg='white')
+        self.badge_label = Label(
+            self.badge_frame, text=self.app.stats.send_badges(),
+            font=('Helvetica', 12), bg='#e5884b', fg='white'
+        )
         self.badge_label.pack(pady=10, padx=10)  # Ajout de marges
 
         # Choix de set
         self.set_choice = StringVar(self.frame)
         self.set_choice.set("Choisir un groupe")
-        self.set_menu = ttk.Combobox(self.frame, textvariable=self.set_choice, values=list(self.app.sets.keys()))
+        self.set_menu = ttk.Combobox(
+            self.frame, textvariable=self.set_choice,
+            values=list(self.app.sets.keys())
+        )
         self.set_menu.pack(pady=10)
         self.set_menu.config(width=20)
 
@@ -441,7 +509,10 @@ class UI:
         self.canvas.pack(pady=20, expand=True)
 
         # Bouton commencer
-        self.start_button = Button(self.frame, text="Commencer la révision", command=self.start_revision, bg='#468faf', fg='white')
+        self.start_button = Button(
+            self.frame, text="Commencer la révision",
+            command=self.start_revision, bg='#468faf', fg='white'
+        )
         self.start_button.pack(pady=5)
 
         # Label pour la question
