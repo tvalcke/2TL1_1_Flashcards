@@ -4,7 +4,8 @@ Dans le cadre du cours de DEV2 en 2ème année de bachelier de TI à l'EPHEC
 
 Chat GPT a été utilisé pour trouver un modèle de commentaires pour les méthodes
 """
-from tkinter import *
+from tkinter import Tk
+from tkinter import ttk
 from tkinter import Label
 from tkinter import Frame
 from tkinter import StringVar
@@ -12,8 +13,8 @@ from tkinter import Canvas
 from tkinter import Button
 from tkinter import Entry
 from tkinter import Menu
-from tkinter import ttk  # je l'importe en plus car il n'est pas compris dans *
 from tkinter import messagebox
+from tkinter import END
 
 from datetime import date, time, datetime, timedelta
 from typing import List
@@ -465,9 +466,13 @@ class UI:
         self.menubar = Menu(self.window)
         self.settingsmenu = Menu(self.menubar, tearoff=0)
         self.menubar.add_cascade(label="Settings", menu=self.settingsmenu)
-        self.settingsmenu.add_command(label='Dark Theme', command=self.toggle_mode)
+        self.settingsmenu.add_command(
+            label='Dark Theme', command=self.toggle_mode
+        )
         self.settingsmenu.add_separator()
-        self.settingsmenu.add_command(label='Fermer Application', command=self.on_closing)
+        self.settingsmenu.add_command(
+            label='Fermer Application', command=self.on_closing
+        )
         self.window.config(menu=self.menubar)
 
         # Label Titre
@@ -516,7 +521,10 @@ class UI:
         self.start_button.pack(pady=5)
 
         # Label pour la question
-        self.question_label = Label(self.frame, text="", font=('Courier New', 20), bg="#f5f5f5", fg="black")
+        self.question_label = Label(
+            self.frame, text="", font=('Courier New', 20),
+            bg="#f5f5f5", fg="black"
+        )
         self.question_label.pack()
 
         # Frame pour les boutons de réponse
@@ -524,17 +532,29 @@ class UI:
         self.button_frame.pack(pady=20, anchor='center')
 
         # Boutons pour réponses
-        self.answer_button = Button(self.button_frame, text="Montrer la réponse", command=None, bg='#adb5bd')
+        self.answer_button = Button(
+            self.button_frame, text="Montrer la réponse",
+            command=None, bg='#adb5bd'
+        )
         self.answer_button.grid(row=0, column=1, padx=5, pady=1)
 
-        self.correct_button = Button(self.button_frame, text="Correct", command=None, bg='#55a630')
+        self.correct_button = Button(
+            self.button_frame, text="Correct",
+            command=None, bg='#55a630'
+        )
         self.correct_button.grid(row=0, column=0, padx=5, pady=5)
 
-        self.incorrect_button = Button(self.button_frame, text="Incorrect", command=None, bg='#e71d36')
+        self.incorrect_button = Button(
+            self.button_frame, text="Incorrect",
+            command=None, bg='#e71d36'
+            )
         self.incorrect_button.grid(row=0, column=2, padx=5, pady=5)
 
         # Statistiques
-        self.stats_label = Label(self.frame, text=self.app.stats.send_stats(), font=('Courier New', 12), bg="#f5f5f5", fg="black")
+        self.stats_label = Label(
+            self.frame, text=self.app.stats.send_stats(),
+            font=('Courier New', 12), bg="#f5f5f5", fg="black"
+        )
         self.stats_label.pack()
 
         # Frame pour ajouter une flashcard
@@ -542,39 +562,65 @@ class UI:
         self.add_card_frame.pack(pady=10, anchor='center')
 
         # Entrées pour les flashcards
-        self.question_entry_label = Label(self.add_card_frame, text="Question:", font=('Courier New', 12), bg="#f5f5f5")
+        self.question_entry_label = Label(
+            self.add_card_frame, text="Question:",
+            font=('Courier New', 12), bg="#f5f5f5"
+        )
         self.question_entry_label.grid(row=0, column=0, padx=5, pady=5)
-        self.question_entry = Entry(self.add_card_frame, font=('Courier New', 12), width=30)
+        self.question_entry = Entry(
+            self.add_card_frame,
+            font=('Courier New', 12), width=30
+        )
         self.question_entry.grid(row=0, column=1, padx=5, pady=5)
 
-        self.answer_entry_label = Label(self.add_card_frame, text="Réponse:", font=('Courier New', 12), bg="#f5f5f5")
+        self.answer_entry_label = Label(
+            self.add_card_frame, text="Réponse:",
+            font=('Courier New', 12), bg="#f5f5f5"
+        )
         self.answer_entry_label.grid(row=1, column=0, padx=5, pady=5)
-        self.answer_entry = Entry(self.add_card_frame, font=('Courier New', 12), width=30)
+        self.answer_entry = Entry(
+            self.add_card_frame,
+            font=('Courier New', 12), width=30
+        )
         self.answer_entry.grid(row=1, column=1, padx=5, pady=5)
 
-        self.title_entry_label = Label(self.add_card_frame, text="Titre:", font=('Courier New', 12), bg="#f5f5f5")
+        self.title_entry_label = Label(
+            self.add_card_frame, text="Titre:",
+            font=('Courier New', 12), bg="#f5f5f5"
+        )
         self.title_entry_label.grid(row=2, column=0, padx=5, pady=5)
-        self.title_entry = Entry(self.add_card_frame, font=('Courier New', 12), width=30)
+        self.title_entry = Entry(
+            self.add_card_frame,
+            font=('Courier New', 12), width=30
+        )
         self.title_entry.grid(row=2, column=1, padx=5, pady=5)
 
-        self.set_entry_label = Label(self.add_card_frame, text="Set:", font=('Courier New', 12), bg="#f5f5f5")
+        self.set_entry_label = Label(
+            self.add_card_frame, text="Set:",
+            font=('Courier New', 12), bg="#f5f5f5"
+        )
         self.set_entry_label.grid(row=3, column=0, padx=5, pady=5)
-        self.set_entry = Entry(self.add_card_frame, font=('Courier New', 12), width=30)
+        self.set_entry = Entry(
+            self.add_card_frame,
+            font=('Courier New', 12), width=30
+        )
         self.set_entry.grid(row=3, column=1, padx=5, pady=5)
 
         # Bouton Ajouter une flashcard
-        self.add_button = Button(self.add_card_frame, text="Ajouter une flashcard", command=self.add_flashcard, bg='#f6aa1c')
+        self.add_button = Button(
+            self.add_card_frame, text="Ajouter une flashcard",
+            command=self.add_flashcard, bg='#f6aa1c'
+        )
         self.add_button.grid(row=4, column=0, columnspan=2, pady=10)
 
         # Fermer l'application proprement
         self.window.protocol("WM_DELETE_WINDOW", self.on_closing)
 
-
-
     def on_closing(self):
-        if messagebox.askyesno(title="Fermer ?", message="Vous voulez vraiment fermer l'app ?"):
+        if messagebox.askyesno(
+            title="Fermer ?", message="Vous voulez vraiment fermer l'app ?"
+        ):
             self.window.destroy()
-            
 
     def toggle_mode(self):
         """     #Mathéo
@@ -594,7 +640,6 @@ class UI:
             self.set_menu.config(background='gray', foreground='black')
             self.canvas.config(bg='black')
             self.start_button.config(bg='darkgray', fg='white')
-            #self.toggle_button.config(bg='gray', fg='white', text='Mode Clair')
             self.question_label.config(bg='black', fg='white')
             self.button_frame.config(bg='black')
             self.answer_button.config(bg='darkgray', fg='white')
@@ -624,7 +669,6 @@ class UI:
             self.set_menu.config(background='#f5f5f5', foreground='black')
             self.canvas.config(bg='#f5ebe0')
             self.start_button.config(bg='blue', fg='#f5f5f5')
-            #self.toggle_button.config(bg='lightgray', fg='black', text='Mode Sombre')
             self.question_label.config(bg='#f5f5f5', fg='black')
             self.button_frame.config(bg='#f5f5f5')
             self.answer_button.config(bg='#adb5bd', fg='black')
@@ -649,14 +693,15 @@ class UI:
         """ #Nathan
         @description:
         Démarre la révision pour un set sélectionné
-        
         @pré:
-        * self.set_choice contient le nom du set sélectionné dans le menu déroulant
+        * self.set_choice contient le nom du set sélectionné dans
+        le menu déroulant
         * self.app.sets est un dictionnaire contenant des ensembles de cartes
-        
         @post:
-        * Si un set valide avec des cartes est sélectionné, une carte aléatoire de cet ensemble est affichée en appelant show_card
-        * Si le set est vide ou non trouvé, un message indiquant qu'aucune carte n'est disponible est affiché
+        * Si un set valide avec des cartes est sélectionné, une carte
+        aléatoire de cet ensemble est affichée en appelant show_card
+        * Si le set est vide ou non trouvé, un message indiquant qu'aucune
+        carte n'est disponible est affiché
         """
 
         selected_set_name = self.set_choice.get()
@@ -665,7 +710,9 @@ class UI:
             current_card = random.choice(current_set.cards)
             self.show_card(current_card)
         else:
-            self.question_label.config(text="Aucune carte disponible dans ce set.")
+            self.question_label.config(
+                text="Aucune carte disponible dans ce set."
+            )
 
     def show_card(self, card):
         """ #Nathan
@@ -673,11 +720,13 @@ class UI:
             Affiche la question lié à une carte sur le canevas
 
             @pré:
-            * card est une instance de Flashcard contenant une question et une réponse
+            * card est une instance de Flashcard contenant une question et
+            une réponse
 
             @post:
             * Le canevas est mis à jour pour afficher la question de la carte
-            * Le bouton pour afficher la réponse est configuré pour appeler show_answer avec la carte actuelle
+            * Le bouton pour afficher la réponse est configuré pour appeler
+            show_answer avec la carte actuelle
         """
         self.canvas.delete("all")
         self.draw_card(self.canvas, card, 50, 50, 300, 200)
@@ -692,12 +741,15 @@ class UI:
 
         @post:
         * Le canevas est mis à jour pour afficher la réponse de la carte
-        * Les boutons d'évaluation ("Correct" et "Incorrect") sont configurés pour appeler la méthode evaluate avec la réponse correcte ou incorrecte
+        * Les boutons d'évaluation ("Correct" et "Incorrect") sont configurés
+        pour appeler la méthode evaluate avec la réponse correcte ou incorrecte
     """
         self.canvas.delete("all")
         self.draw_card(self.canvas, card, 50, 50, 300, 200, answer=True)
         self.correct_button.config(command=lambda: self.evaluate(card, True))
-        self.incorrect_button.config(command=lambda: self.evaluate(card, False))
+        self.incorrect_button.config(
+            command=lambda: self.evaluate(card, False)
+        )
 
     def evaluate(self, card, correct):
         """ #Nathan
@@ -705,12 +757,16 @@ class UI:
         Evalue la réponse de l'utilisateur et met à jour les statistiques
 
         @pré:
-        * card est une instance de Flashcard qui sera mise à jour en fonction de la réponse (correct ou incorrect)
-        * correct est un booléen indiquant si la réponse donnée par l'utilisateur est correcte
+        * card est une instance de Flashcard qui sera mise à jour en fonction
+        de la réponse (correct ou incorrect)
+        * correct est un booléen indiquant si la réponse donnée par
+        l'utilisateur est correcte
 
         @post:
-        * La carte est mise à jour en utilisant la méthode review pour ajuster son niveau de révision
-        * Les statistiques de l'application sont mises à jour avec calculate_progress
+        * La carte est mise à jour en utilisant la méthode review pour ajuster
+        son niveau de révision
+        * Les statistiques de l'application sont mises à jour avec
+        calculate_progress
         * Le label des statistiques affiche les statistiques mises à jour
         * La révision reprend avec start_revision
         """
@@ -726,11 +782,14 @@ class UI:
         Met à jour le menu déroulant des ensembles disponibles
 
         @pré:
-        * self.app.sets contient les ensembles actuellement chargés dans l'application
+        * self.app.sets contient les ensembles actuellement chargés dans
+        l'application
 
         @post:
-        * Le menu déroulant set_menu est mis à jour avec les noms des ensembles disponibles
-        * Si aucun ensemble n'est sélectionné, le menu est défini par défaut sur "Choisir un set"
+        * Le menu déroulant set_menu est mis à jour avec les noms des
+        ensembles disponibles
+        * Si aucun ensemble n'est sélectionné, le menu est défini par
+        défaut sur "Choisir un set"
         """
         self.set_menu['values'] = list(self.app.sets.keys())
         if not self.set_menu.get():
@@ -739,38 +798,52 @@ class UI:
     def draw_card(self, canvas, card, x, y, width, height, answer=False):
         """     #Mathéo
         @description :
-            Affiche la carte de révison sur le canvas a un emplacement donné en paramètre ('x', 'y'). 
-            Si 'answer' est True la réponse est affichée sur la carte sinon la question est affichée.
+            Affiche la carte de révison sur le canvas a un emplacement donné
+            en paramètre ('x', 'y').
+            Si 'answer' est True la réponse est affichée sur la carte sinon la
+            question est affichée.
 
         @pré:
             * 'canvas' est un objet Canvas de Tkinter,
-            * 'card' est un objet ayant pour attributs 'question' et 'answer', elle contient les textes de la question et de la réponse,
-            * 'x' et 'y' sont des int qui représentent les coordonnées de l'origine de la carte,
-            * 'width' et 'height' sont des int qui représentent la largeur et la hauteur de la carte.
+            * 'card' est un objet ayant pour attributs 'question' et 'answer',
+            elle contient les textes de la question et de la réponse,
+            * 'x' et 'y' sont des int qui représentent les coordonnées de
+            l'origine de la carte,
+            * 'width' et 'height' sont des int qui représentent la largeur et
+            la hauteur de la carte.
 
         @post:
-            * Une carte de largeur et hauteur spécifié est créée sur le canvas, la question ou la réponse sont inscrit au centre de celle-ci.
+            * Une carte de largeur et hauteur spécifié est créée sur le canvas,
+            la question ou la réponse sont inscrit au centre de celle-ci.
         """
-        canvas.create_rectangle(x, y, x + width, y + height, fill='lightblue', outline='black')
+        canvas.create_rectangle(
+            x, y, x + width, y + height, fill='lightblue', outline='black'
+        )
         if answer:
             text = f"Réponse: {card.answer}"
         else:
             text = card.question
 
-        canvas.create_text(x + width / 2, y + height / 2, text=text, font=('Courier New', 16), fill='black')
+        canvas.create_text(
+            x + width / 2, y + height / 2, text=text,
+            font=('Courier New', 16), fill='black'
+        )
 
     def add_flashcard(self):
         """     #Mathéo
         @description :
-            Ajoute une nouvelle carte en incluant la question, la réponse, le titre et le nom du set.
-            Met à jours les sets disponibles et vides les champs de saisie après l'ajout d'une carte.
+            Ajoute une nouvelle carte en incluant la question, la réponse, le
+            titre et le nom du set.
+            Met à jours les sets disponibles et vides les champs de saisie
+            après l'ajout d'une carte.
 
         @pré:
             * 'question', 'answer' et 'title' sont des strings non vides.
 
         @post:
             * Une nouvelle carte est ajoutée à l'application,
-            * Les sets disponible sont mit à jours et les champs de saisie sont vidés.
+            * Les sets disponible sont mit à jours et les champs de saisie
+            sont vidés.
         """
         title = self.title_entry.get()
         question = self.question_entry.get()
@@ -784,6 +857,7 @@ class UI:
             self.question_entry.delete(0, END)
             self.answer_entry.delete(0, END)
             self.set_entry.delete(0, END)
+
 
 # Créer une instance de l'application
 app = Application(app_name='FlashCards', version='1.0')
