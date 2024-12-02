@@ -8,7 +8,7 @@ from app import Group
 
 class TestsTristan(unittest.TestCase):
 
-    def setUp(self):  # setup une flashcard pour faire les tests 
+    def setUp(self):  # setup une flashcard pour faire les tests
         """Initialisation d'un groupe et d'une flashcard avant chaque test"""
         self.group = Group(name="Math")
         self.flashcard = Flashcard(
