@@ -61,9 +61,14 @@ class Flashcard:
         elif self.review_level >= 1:
             self.review_level -= 1
         # ajuste la prochaine révision par rapport au niveau de connaissance :
-        self.next_review_date = datetime.now() + timedelta(
-            days=2 ** self.review_level
-        )
+        try:
+            self.next_review_date = datetime.now() + timedelta(
+                days=2 ** self.review_level
+            )
+        except OverflowError as e:
+            raise ValueError(
+                "Review level trop élevé pour être calculé."
+            ) from e
 
     def evaluate_response(self, user_response: str, correct_answer: str):
         """     #Tristan
@@ -98,6 +103,11 @@ class Group:
         @post:
             * 'flashcard' est ajoutée à la liste 'self.cards'.
         """
+        if not isinstance(flashcard, Flashcard):
+            raise TypeError(
+                "L'objet doit être une instance de la classe Flashcard."
+            )
+
         self.cards.append(flashcard)
 
 
@@ -152,10 +162,18 @@ class Statistics:
             * 'user_xp' n'est pas incrémenté et 'streak_count' est remis à 1
             si la réponse est mauvaise
         """
+        if not isinstance(streak_indicator, bool):
+            raise ValueError("'streak_indicator' doit être un booléen.")
+
         if streak_indicator:
             self.user_xp += int(100 * (self.streak_count + 1))
             self.streak_count += 0.1
-            self.unlock_badge()
+            try:
+                self.unlock_badge()
+            except Exception as e:
+                raise RuntimeError(
+                    "Erreur lors du déblocage des badges."
+                ) from e
         else:
             self.streak_count = 0.0
 
@@ -194,6 +212,9 @@ class Statistics:
             * 'self.correct_answers' est incrémenté de 1 si correct est True
             * appelle la méthode 'calculate_xp' pour mettre à jour l'expérience
         """
+        if not isinstance(correct, bool):
+            raise ValueError("'correct' doit être un booléen.")
+
         self.cards_reviewed += 1
         if correct:
             self.correct_answers += 1
@@ -238,20 +259,41 @@ class Statistics:
             précision en pourcentage, les points d'XP et le combo actuel.
             * Le combo actuel est égal à 'streak_count' * 10
         """
+        if not isinstance(self.cards_reviewed, int) or not isinstance(
+            self.correct_answers, int
+        ):
+            raise TypeError(
+                "'cards_reviewed' et 'correct_answers' doivent"
+                " être des entiers."
+            )
+        if self.cards_reviewed < 0 or self.correct_answers < 0:
+            raise ValueError(
+                "'cards_reviewed' et 'correct_answers' ne"
+                "peuvent pas être négatifs."
+                )
+
         if self.cards_reviewed > 0:
             accuracy = (self.correct_answers / self.cards_reviewed) * 100
         else:
             accuracy = 0
+
         return (
-            "Nombre de cartes vues: " + str(self.cards_reviewed) +
-            ", précision: " + str(round(accuracy, 2)) + " %. \n\nXP: "
-            + str(self.user_xp) + " Combo :" + str(int(self.streak_count * 10))
+            f"Nombre de cartes vues: {self.cards_reviewed}, précision: {
+                round(accuracy, 2)
+            } %. \n\n"
+            f"XP: {self.user_xp} Combo: {int(self.streak_count * 10)}"
         )
 
 
 class Badge:
     def __init__(self, name: str, description: str,
                  xp_threshold: int, badge_icon=None):
+        if not isinstance(name, str) or not isinstance(description, str):
+            raise TypeError("Les paramètres 'name' et 'description' doivent "
+                            "être des chaînes de caractères.")
+        if not isinstance(xp_threshold, int) or xp_threshold < 0:
+            raise ValueError("'xp_threshold' doit être un entier positif.")
+
         self.name = name
         self.description = description
         self.xp_threshold = xp_threshold
@@ -264,6 +306,8 @@ class Badge:
         @description :
             Verifie si le palier d'XP est atteint pour debloquer ce badge
         """
+        if not isinstance(user_xp, int) or user_xp < 0:
+            raise ValueError("'user_xp' doit être un entier positif.")
         return user_xp >= self.xp_threshold and not self.earned
 
     def assign_badge(self):
@@ -278,10 +322,24 @@ class Badge:
             * Attribue un badge si les conditions sont remplies
             (implémentation future).
         """
+        if self.earned:
+            raise RuntimeError("Ce badge a déjà été attribué.")
+
+        try:
+            self.date_earned = datetime.now().strftime("%d/%m/%Y %H:%M")
+        except Exception as e:
+            raise RuntimeError(
+                "Erreur lors de l'attribution de la date."
+            ) from e
+
         self.earned = True
-        self.date_earned = datetime.now()
 
     def __str__(self):
+        if not self.date_earned:
+            return (
+                f"Badge: {self.name}, Description: {self.description}, "
+                "Non encore attribué."
+            )
         return (
             f"Badge: {self.name}, Description: {self.description}, "
             f"Date Earned: {self.date_earned}"
@@ -615,6 +673,10 @@ class UI:
 
         # Fermer l'application proprement
         self.window.protocol("WM_DELETE_WINDOW", self.on_closing)
+
+    def show_error_popup(self, title: str, message: str):
+        """ Affiche un pop-up , pour les msg d'erreur """
+        messagebox.showerror(title, message)
 
     def on_closing(self):
         if messagebox.askyesno(

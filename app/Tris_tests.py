@@ -29,6 +29,19 @@ class TestsTristan(unittest.TestCase):
             self.flashcard.review_level, initial_review_level + 1
         )
 
+    def test_review_level_increases_properly(self):
+        """Test que le niveau de révision augmente correctement
+        après plusieurs réponses correctes"""
+        self.flashcard.review_level = 2  # On commence avec un niveau 2
+        initial_review_level = self.flashcard.review_level
+
+        # Effectuer plusieurs révisions correctes
+        self.flashcard.review(correct=True)
+        self.flashcard.review(correct=True)
+
+        # Vérification que le niveau de révision a bien augmenté
+        self.assertEqual(self.flashcard.review_level, initial_review_level + 2)
+
     def test_review_incorrect_answer_decreases_review_level(self):
         """Test que le niveau de révision diminue
         quand la réponse est incorrecte"""
@@ -39,6 +52,19 @@ class TestsTristan(unittest.TestCase):
         self.assertEqual(
             self.flashcard.review_level, initial_review_level - 1
         )
+
+    def test_review_level_does_not_increase_on_invalid_review(self):
+        """Test que le niveau de révision
+        n'augmente pas de manière inattendue"""
+        self.flashcard.review_level = 0  # On commence avec un niveau 0
+        initial_review_level = self.flashcard.review_level
+
+        # Simuler une réponse correcte puis une réponse incorrecte
+        self.flashcard.review(correct=True)
+        self.flashcard.review(correct=False)
+
+        # Vérification que le niveau de révision reste correct
+        self.assertEqual(self.flashcard.review_level, initial_review_level)
 
     def test_review_level_does_not_go_below_zero(self):
         """Test que le niveau de révision ne devient pas inférieur à zéro"""
@@ -95,6 +121,19 @@ class TestsTristan(unittest.TestCase):
             next_review_after_correct, next_review_after_incorrect
         )
 
+    def test_review_overflow_error(self):
+        """Test qu'un OverflowError est levé si le niveau de
+        révision est trop élevé"""
+        # On fixe un niveau de révision très élevé
+        self.flashcard.review_level = 1000  # nv max
+
+        with self.assertRaises(ValueError) as context:
+            self.flashcard.review(correct=True)
+
+        self.assertTrue(
+            "Review level trop élevé pour être calculé"
+            in str(context.exception))
+
     # tests unitaires pour la méthode 'add_flashcard'
     # dans la class Group
 
@@ -146,6 +185,16 @@ class TestsTristan(unittest.TestCase):
         self.assertEqual(added_flashcard.title, "Test Title")
         self.assertEqual(added_flashcard.question, "What is 2 + 2?")
         self.assertEqual(added_flashcard.answer, "4")
+
+    def test_add_flashcard_with_invalid_type(self):
+        """Vérifie que l'ajout d'un objet non valide"
+        " (pas une instance de Flashcard) soulève une exception"""
+        with self.assertRaises(TypeError):
+            # Passer une chaîne de caractères au lieu
+            # d'une instance de Flashcard
+            self.group.add_flashcard("Invalid Flashcard")
+        with self.assertRaises(TypeError):
+            self.group.add_flashcard(58)
 
 
 if __name__ == "__main__":
