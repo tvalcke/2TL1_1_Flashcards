@@ -97,8 +97,6 @@ class Group:
         @description:
             Ajoute une nouvelle flashcard à la liste des cartes dans le set
         @pre:
-            * 'flashcard' est une instance de la classe Flashcard qui contient
-            une question et une réponse(plus un titre et le set correspondant)
             * 'self.cards' est une liste de flashcards déjà initialisée
         @post:
             * 'flashcard' est ajoutée à la liste 'self.cards'.

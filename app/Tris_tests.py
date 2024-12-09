@@ -199,3 +199,18 @@ class TestsTristan(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+"""
+    Les tests que j'ai écrit n'ont pas réussi du premier coup, j'ai eu quelques
+erreurs au niveau des exeptions que je ne gérait pas bien ou pas du tout.
+J'ai du adapter le code et mes tests en fonction de ces erreurs.
+
+    Comme dans le tp9, j'ai également du revoir certaines préconditions et les
+élargir pour les exeptions que j'ai rajouté ou que j'ai testé
+
+    J'a également choisit de ne pas mettre toutes les exeptions pour pouvoir
+justement laisser ces conditions dans les pré de la méthode concernée
+
+    Le code coverage des tests effectués est de 99% selon le module coverage
+sur Visual Studio code
+"""
