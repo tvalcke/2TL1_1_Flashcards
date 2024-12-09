@@ -511,7 +511,8 @@ class UI:
         """
         # Initialisation de l'interface utilisateur
         self.window.title('FlashCards')
-        self.window.geometry('1920x1080')
+        # self.window.geometry('1920x1080')
+        self.window.state('zoomed')
         self.window.minsize(600, 900)
         # self.window.iconbitmap('images/logobidon.ico')
         self.window.config(background='#f5f5f5')
