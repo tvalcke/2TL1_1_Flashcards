@@ -97,8 +97,6 @@ class Group:
         @description:
             Ajoute une nouvelle flashcard à la liste des cartes dans le set
         @pre:
-            * 'flashcard' est une instance de la classe Flashcard qui contient
-            une question et une réponse(plus un titre et le set correspondant)
             * 'self.cards' est une liste de flashcards déjà initialisée
         @post:
             * 'flashcard' est ajoutée à la liste 'self.cards'.
@@ -418,14 +416,16 @@ class Application:
             return sets
 
         except FileNotFoundError:  # fichier pas trouvé
-            print("Le fichier n'a pas été trouvé à l'emplacement spécifié.")
+            UI.show_error_popup('FileNotFoundError', "Le fichier n'a pas " +
+                                "été trouvé à l'emplacement spécifié.")
             return sets
 
         except UnicodeDecodeError:  # Si mauvais encodage
-            print(
-                "Erreur de décodage du fichier avec l'encodage UTF-8."
-                "Vérifie l'encodage."
-            )
+            UI.show_error_popup('UnicodeDecodeError',
+                                "Erreur de décodage du fichier avec " +
+                                "l'encodage UTF-8."
+                                "Vérifie l'encodage."
+                                )
 
         return sets  # si on n'a pas pu lire ça, renvoie les sets vides
 
@@ -460,7 +460,9 @@ class Application:
                 writer = csv.writer(file)
                 writer.writerow([title, question, answer, set_name])
         except Exception as e:
-            print("Erreur lors de l'écriture dans le fichier CSV :", e)
+            UI.show_error_popup('Exception',
+                                "Erreur lors de l'écriture " +
+                                f"dans le fichier CSV : {e}")
 
     def display_statistics(self):
         """     #Mathéo
@@ -511,7 +513,8 @@ class UI:
         """
         # Initialisation de l'interface utilisateur
         self.window.title('FlashCards')
-        self.window.geometry('1920x1080')
+        # self.window.geometry('1920x1080')
+        self.window.state('zoomed')
         self.window.minsize(600, 900)
         # self.window.iconbitmap('images/logobidon.ico')
         self.window.config(background='#f5f5f5')
@@ -674,7 +677,7 @@ class UI:
         # Fermer l'application proprement
         self.window.protocol("WM_DELETE_WINDOW", self.on_closing)
 
-    def show_error_popup(self, title: str, message: str):
+    def show_error_popup(title: str, message: str):
         """ Affiche un pop-up , pour les msg d'erreur """
         messagebox.showerror(title, message)
 
@@ -919,6 +922,10 @@ class UI:
             self.question_entry.delete(0, END)
             self.answer_entry.delete(0, END)
             self.set_entry.delete(0, END)
+
+        else:
+            UI.show_error_popup('NotEnoughArguments',
+                                'Veuillez remplir toutes les cases')
 
 
 # Créer une instance de l'application
