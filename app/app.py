@@ -1,8 +1,6 @@
 """
-Code rédigé par Préat Thomas - Hertmans Mathéo - Valcke Tristan - Colson Nathan
-Dans le cadre du cours de DEV2 en 2ème année de bachelier de TI à l'EPHEC
-
-Chat GPT a été utilisé pour trouver un modèle de commentaires pour les méthodes
+Code terminé & amélioré par Tristan Valcke, la version basique rendue pour le
+cours est dans la branche versionCours
 """
 from tkinter import Tk
 from tkinter import ttk
@@ -536,13 +534,6 @@ class UI:
         )
         self.window.config(menu=self.menubar)
 
-        # Label Titre
-        self.label_title = Label(
-            self.titleFrame, text='Bienvenue Mr Jean-Révise',
-            font=('Helvetica', 30), bg="#f5f5f5", fg='black'
-        )
-        self.label_title.pack()
-
         # Frame principale
         self.frame = Frame(self.window, bg='#f5f5f5')
         self.frame.pack(expand=True, fill='both', anchor='center')
@@ -673,9 +664,6 @@ class UI:
             command=self.add_flashcard, bg='#f6aa1c'
         )
         self.add_button.grid(row=4, column=0, columnspan=2, pady=10)
-
-        # Fermer l'application proprement
-        self.window.protocol("WM_DELETE_WINDOW", self.on_closing)
 
     def show_error_popup(title: str, message: str):
         """ Affiche un pop-up , pour les msg d'erreur """
